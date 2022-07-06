@@ -41,8 +41,6 @@ public class NewBank {
 	public synchronized String processRequest(CustomerID customer, String request) {
 		if (customers.containsKey(customer.getKey())) {
 			String command = request.split(" ")[0];
-			System.out.println(command);
-			System.out.println(request);
 			switch (command) {
 				case "SHOWMYACCOUNTS":
 					return showMyAccounts(customer);
