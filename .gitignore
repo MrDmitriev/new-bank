@@ -9,6 +9,9 @@ https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+*.xml
+*.iml
+*.class
 
 # AWS User-specific
 .idea/**/aws.xml
