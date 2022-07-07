@@ -58,12 +58,16 @@ public class NewBank {
 		return (customers.get(customer.getKey())).accountsToString();
 	}
 
-	private String topUpAccount(CustomerID customer, String request) {
+	private String topUpAccount(CustomerID customerID, String request) {
+		Customer customer = customers.get(customerID.getKey());
+		// request is in the form of "TOPUPACCOUNT ACCOUNTNAME AMOUNT"
+		// so we need to split the request into 3 parts
 		String[] tokens = request.split(" ");
 		if (tokens.length == 3) {
-			Account account = (customers.get(customer.getKey())).getAccount(tokens[1]);
+			Account account = customer.getAccount(tokens[1]);
+			Double amount = Double.parseDouble(tokens[2]);
 			if (account != null) {
-				account.topUpAccount(Double.parseDouble(tokens[2]));
+				account.topUpAccount(amount);
 				return "Pending approval from admin of the bank";
 			}
 		}
