@@ -7,8 +7,8 @@ public class NewBank {
 	/**
 	 * Created nested HashMap to hold the Customer, username, and password
 	 * relationships:
-	 * HashMap<Customer, HashMap <String, String>> which maps to
-	 *  <Customer < userName, password>>
+	 * HashMap<userName, HashMap <Customer, String>> which maps to
+	 *  <String < Customer, password>>
 	 **/
 	private HashMap< String, HashMap <Customer, String> > customers;
 
