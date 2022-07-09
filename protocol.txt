@@ -17,3 +17,7 @@ Returns SUCCESS or FAIL
 PAY <Person/Company> <Ammount>
 e.g. PAY John 100
 Returns SUCCESS or FAIL
+
+TOPUPACCOUNT <Account> <Amount>
+e.g TOPUPACCOUNT Main 1000
+Returns "Pending approval from admin of the bank" or FAIL
