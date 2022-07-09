@@ -100,5 +100,4 @@ public class NewBank {
 		}
 		return "FAIL";
 	}
-
 }
