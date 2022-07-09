@@ -54,6 +54,8 @@ public class NewBank {
 					return showMyAccounts(customer);
 				case "TOPUPACCOUNT":
 					return topUpAccount(customer, request);
+				case "NEWACCOUNT":
+					return createNewAccount(customer, request);
 				default:
 					return "FAIL";
 			}
@@ -76,6 +78,24 @@ public class NewBank {
 			if (account != null) {
 				account.topUpAccount(amount);
 				return "Pending approval from admin of the bank";
+			}
+		}
+		return "FAIL";
+	}
+
+	// this function creates a new account
+	private String createNewAccount(CustomerID customerID, String request) {
+		Customer customer = customers.get(customerID.getKey());
+		// request is in the form of "NEWACCOUNT ACCOUNTNAME"
+		//
+		String[] tokens = request.split(" ");
+		if (tokens.length >= 2) {
+			String accountName = tokens[1];
+			if (customer.getAccount(accountName)!=null){
+				return "FAIL - Account already exists";
+			} else {
+				customer.addAccount(new Account(accountName,0));
+				return "Account " +accountName+ " created, opening balance "+0;
 			}
 		}
 		return "FAIL";
