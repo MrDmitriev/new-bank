@@ -13,16 +13,23 @@ public class NewBank {
 	}
 
 	private void addTestData() {
+//create customer object for bhagy
 		Customer bhagy = new Customer();
+//add account to list of type main with 1000
 		bhagy.addAccount(new Account("Main", 1000.0));
+//add bhagy to customers
 		customers.put("Bhagy", bhagy);
-
+//create customer for christina
 		Customer christina = new Customer();
+//add account to list of type savings with 1500
 		christina.addAccount(new Account("Savings", 1500.0));
+//add christina to customers
 		customers.put("Christina", christina);
-
+//create customer object for john
 		Customer john = new Customer();
+//add account for john of type checking with 250
 		john.addAccount(new Account("Checking", 250.0));
+//add john to customers
 		customers.put("John", john);
 	}
 

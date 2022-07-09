@@ -10,6 +10,7 @@ public class Customer {
 		accounts = new ArrayList<>();
 	}
 
+	//create string of all accounts
 	public String accountsToString() {
 		String s = "";
 		for (Account a : accounts) {
@@ -18,6 +19,7 @@ public class Customer {
 		return s;
 	}
 
+	//get account details
 	public Account getAccount(String accountName) {
 		for (Account a : accounts) {
 			if (a.getName().equals(accountName)) {

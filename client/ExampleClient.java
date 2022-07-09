@@ -1,5 +1,5 @@
 package newbank.client;
-//test comment for commit 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
