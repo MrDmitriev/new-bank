@@ -3,12 +3,18 @@ package newbank.server;
 import java.util.HashMap;
 
 public class NewBank {
-
 	private static final NewBank bank = new NewBank();
-	private HashMap<String, Customer> customers;
+	/**
+	 * Created nested HashMap to hold the Customer, username, and password
+	 * relationships:
+	 * HashMap<userName, HashMap <Customer, String>> which maps to
+	 *  <String < Customer, password>>
+	 **/
+	private HashMap< String, HashMap <Customer, String> > customers;
 
 	private NewBank() {
 		customers = new HashMap<>();
+
 		addTestData();
 	}
 
@@ -17,20 +23,31 @@ public class NewBank {
 		Customer bhagy = new Customer();
 //add account to list of type main with 1000
 		bhagy.addAccount(new Account("Main", 1000.0));
+
 //add bhagy to customers
-		customers.put("Bhagy", bhagy);
+    /** put username, Customer and password into the HashMap for each customer */
+		customers.put("Bhagy", new HashMap(){{put(bhagy, "12345");}});
+
 //create customer for christina
 		Customer christina = new Customer();
 //add account to list of type savings with 1500
 		christina.addAccount(new Account("Savings", 1500.0));
+
+
 //add christina to customers
-		customers.put("Christina", christina);
+    /** put username, Customer and password into the HashMap for each customer */
+		customers.put("Christina", new HashMap(){{put(christina, "12345");}});
+
 //create customer object for john
 		Customer john = new Customer();
 //add account for john of type checking with 250
 		john.addAccount(new Account("Checking", 250.0));
+    
+
 //add john to customers
-		customers.put("John", john);
+    /** put username, Customer and password into the HashMap for each customer */
+		customers.put("John", new HashMap(){{put(john, "12345");}});
+
 	}
 
 	public static NewBank getBank() {
@@ -38,7 +55,14 @@ public class NewBank {
 	}
 
 	public synchronized CustomerID checkLogInDetails(String userName, String password) {
-		if (customers.containsKey(userName)) {
+
+		/**
+		 * Access nested HashMap to authenticate both the customer userName and password
+		 * from user input.  If this fails, program returns Null. If it passes it allows
+		 * the user to process requests.
+		 */
+
+		if ((customers.containsKey(userName) && (customers.get(userName).containsValue(password)))) {
 			return new CustomerID(userName);
 		}
 		return null;
@@ -46,6 +70,7 @@ public class NewBank {
 
 	// commands from the NewBank customer are processed in this method
 	public synchronized String processRequest(CustomerID customer, String request) {
+
 		if (customers.containsKey(customer.getKey())) {
 			// command parsing is now based on first word of request
 			String command = request.split(" ")[0];
@@ -62,7 +87,12 @@ public class NewBank {
 	}
 
 	private String showMyAccounts(CustomerID customer) {
-		return (customers.get(customer.getKey())).accountsToString();
+		/**
+		 * Access Customer.accountsToString() method using .keySet().iterator().next()
+		 * to source Customer key
+		 */
+		return customers.get(customer.getKey()).keySet().iterator().next().accountsToString();
+
 	}
 
 	private String topUpAccount(CustomerID customerID, String request) {
