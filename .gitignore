@@ -4,7 +4,8 @@ CLion, Android Studio, WebStorm and Rider
 https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
-.idea
+.idea/
+.idea/**
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
@@ -13,6 +14,8 @@ https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 *.xml
 *.iml
 *.class
+new-bank.iml
+
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -57,7 +60,8 @@ cmake-build-*/
 *.iws
 
 # IntelliJ
-out/*
+out/**
+out
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
