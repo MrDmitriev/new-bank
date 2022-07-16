@@ -5,18 +5,22 @@
 package newbank.server;
 
 public class TestMockDB {
+    private static MockDB mockDB;
 
     public static void main(String[] args) {
-        MockDB myDB = new MockDB();
-        myDB.listCustomerRecords(); // list all customer records
+
+        mockDB = MockDB.getMockDB();
+        mockDB.listCustomerRecords(); // list all customer records
         // attempt to create a new customer with an existing customer name
-        myDB.createNewCustomer("christina", "Christina", "yhT78");
+        mockDB.createNewCustomer("christina", "Christina", "yhT78");
         // create a new customer
-        myDB.createNewCustomer("daniel", "Daniel", "Tgh76");
+        mockDB.createNewCustomer("daniel", "Daniel", "Tgh76");
+        String yourPassword = MockDB.getPasswordFromUserName("Robert"); // test static getPasswordFromUserName function
+        System.out.println("\nYour password is: " + yourPassword);
         // change an existing user's userName
-        myDB.changeUserName("John", "uI8t5", "Johnny");
+        mockDB.changeUserName("John", "uI8t5", "Johnny");
         // attempt to change an existing user's password to a password already in existance.
-        myDB.changePassword("bhagy", "Lki87", "yU872");
-        myDB.listCustomerRecords(); // list all customer records
+        mockDB.changePassword("bhagy", "Lki87", "yU872");
+        mockDB.listCustomerRecords(); // list all customer records
     }
 }

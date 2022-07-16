@@ -2,16 +2,17 @@
  * MockDB.java
  * Week 3 Sprint
  * git branch feature/NB-17-Database-basic-implementation
- */
-
-/**
- * variable and method list:?
+ *
+ * note - like NewBank, MockDB contains a self initialiser and offers two static methods
+ * getPasswordFromUserName and getPasswordFromCustomerName
+ *
+ * variable and method list:
  * constructor MockDB(). This creates a new MockDB object and populates it with a list of 10 customers.
  * getCustomerDetails() returns the full customer database as an ArrayList<String[]> object. In other words ArrayList < {customer, userName, password) > object.
  * getCustomerNameFromUserName(String user) returns the customerName when the userName is provided to search the ArrayList.
  * getUserNameFromCustomerName(String customer) returns the userName when the customerName is provided to search the ArrayList.
- * getPasswordFromUserName(String user) returns the password when the userName is provided.
- * getPasswordFromCustomerName(String customer) returns the password when the customerName is provided.
+ * static getPasswordFromUserName(String user) returns the password when the userName is provided.
+ * static getPasswordFromCustomerName(String customer) returns the password when the customerName is provided.
  * createNewCustomer (String customerName, String userName, String password) setter to create a new customer in the following format { String customerName, String userName, String password }
  * removeCustomerRecord (String user, String password) removes a single customer record completely when the username and password is provided for a particular customer.
  * changePassword (String user, String oldPassword, String newPassword) changes a user’s password when a userName, oldPassword and newPassword are provided.
@@ -24,12 +25,13 @@ import java.util.ArrayList;
 /** provides a DB simulation with 3 fields: customer as String, userName as String and password as String */
 class MockDB {
 
-    private ArrayList<String[]> customerDetails;
-    private CustomerData data;
+    private static final MockDB db = new MockDB();
+    private static ArrayList<String[]> customerDetails;
+   // private final CustomerData data;
 
     /** Create a new mock database and populate it with records */
     public MockDB(){
-        data = new CustomerData();
+        CustomerData data = new CustomerData();
         customerDetails = new ArrayList<String[]>();
         customerDetails = data.getStoredCustomerData();
     }
@@ -41,7 +43,7 @@ class MockDB {
 
     /** getter method sourcing customerName using userName */
     public String getCustomerNameFromUserName(String userName) {
-        String result = new String();
+        String result = "";
         for (String[] record: customerDetails) {
             if (record[1] == userName) {
                 result = record[0];
@@ -52,7 +54,7 @@ class MockDB {
 
     /** getter method sourcing userName using customerName */
     public String getUserNameFromCustomerName(String customer) {
-        String result = new String();
+        String result = "";
         for (String[] record: customerDetails) {
             if (record[0] == customer) {
                 result = record[1];
@@ -62,8 +64,8 @@ class MockDB {
     }
 
     /** getter method sourcing password using userName */
-    public String getPasswordFromUserName(String userName) {
-        String result = new String();
+    public static String getPasswordFromUserName(String userName) {
+        String result = "";
         for (String[] record: customerDetails) {
             if (record[1] == userName) {
                 result = record[2];
@@ -73,8 +75,8 @@ class MockDB {
     }
 
     /** getter method sourcing passord using customerName */
-    public String getPasswordFromCustomerName(String customer) {
-        String result = new String();
+    public static String getPasswordFromCustomerName(String customer) {
+        String result = "";
         for (String[] record: customerDetails) {
             if (record[0] == customer) {
                 result = record[2];
@@ -147,6 +149,10 @@ class MockDB {
             System.out.println("User Name: " + record[1]);
             System.out.println("Password: " + record[2]);
         }
+    }
+
+    public static MockDB getMockDB() {
+        return db;
     }
 
 }
