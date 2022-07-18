@@ -9,6 +9,7 @@ import java.net.Socket;
 public class NewBankClientHandler extends Thread{
 	
 	private NewBank bank;
+	private Authorisation userAuthorisation;
 	private BufferedReader in;
 	private PrintWriter out;
 	
@@ -30,9 +31,10 @@ public class NewBankClientHandler extends Thread{
 			String password = in.readLine();
 			out.println("Checking Details...");
 			// authenticate user and get customer ID token from bank for use in subsequent requests
-			CustomerID customer = bank.checkLogInDetails(userName, password);
+			userAuthorisation = new Authorisation(userName, password);
+			CustomerID customer = userAuthorisation.getCustomerID();
 			// if the user is authenticated then get requests from the user and process them 
-			if(customer != null) {
+			if(userAuthorisation.userAuthorised() == true && customer != null) {
 				out.println("Log In Successful. What do you want to do?");
 				while(true) {
 					String request = in.readLine();
