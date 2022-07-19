@@ -67,7 +67,7 @@ class MockDB {
     public static String getPasswordFromUserName(String userName) {
         String result = "";
         for (String[] record: customerDetails) {
-            if (record[1] == userName) {
+            if (record[1].equals(userName)) {
                 result = record[2];
             }
         }
