@@ -6,6 +6,7 @@ public class NewBank {
 
 	private static final NewBank bank = new NewBank();
 	private HashMap<String, Customer> customers;
+	private static final int MINIMUM_PARAMETERS_NUMBER = 3;
 
 	private NewBank() {
 		customers = new HashMap<>();
@@ -91,14 +92,20 @@ public class NewBank {
 	private String createNewAccount(CustomerID customerID, String request) {
 		// request is in the form of "NEWACCOUNT ACCOUNTNAME"
 		String[] tokens = request.split(" ");
-		if (tokens.length >= 2) {
+
+		if (tokens.length < MINIMUM_PARAMETERS_NUMBER) {
+			return "FAIL - Account name or initial balance is missing";
+		}
+		if (tokens.length == MINIMUM_PARAMETERS_NUMBER) {
 			Customer customer = customers.get(customerID.getKey());
 			String accountName = tokens[1];
+			Double initialBalance = Double.parseDouble(tokens[2]);
+
 			if (customer.getAccount(accountName)!=null){
 				return "FAIL - Account already exists";
 			} else {
-				customer.addAccount(new Account(accountName,0));
-				return "Account " +accountName+ " created, opening balance "+0;
+				customer.addAccount(new Account(accountName, initialBalance));
+				return "Account " +accountName+ " created, opening balance "+initialBalance;
 			}
 		}
 		return "FAIL";
