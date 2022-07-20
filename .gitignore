@@ -15,6 +15,7 @@ https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 *.iml
 *.class
 new-bank.iml
+*.DS_Store
 
 
 # AWS User-specific
