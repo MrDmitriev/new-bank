@@ -45,7 +45,7 @@ class MockDB {
     public String getCustomerNameFromUserName(String userName) {
         String result = "";
         for (String[] record: customerDetails) {
-            if (record[1] == userName) {
+            if (record[1].equals(userName)) {
                 result = record[0];
             }
         }
@@ -56,7 +56,7 @@ class MockDB {
     public String getUserNameFromCustomerName(String customer) {
         String result = "";
         for (String[] record: customerDetails) {
-            if (record[0] == customer) {
+            if (record[0].equals(customer)) {
                 result = record[1];
             }
         }
@@ -67,7 +67,7 @@ class MockDB {
     public static String getPasswordFromUserName(String userName) {
         String result = "";
         for (String[] record: customerDetails) {
-            if (record[1] == userName) {
+            if (record[1].equals(userName)) {
                 result = record[2];
             }
         }
@@ -78,7 +78,7 @@ class MockDB {
     public static String getPasswordFromCustomerName(String customer) {
         String result = "";
         for (String[] record: customerDetails) {
-            if (record[0] == customer) {
+            if (record[0].equals(customer)) {
                 result = record[2];
             }
         }
@@ -88,7 +88,7 @@ class MockDB {
     /** setter method that creates a new customer */
     public void createNewCustomer (String customerName, String userName, String  password) {
         for (String[] record: customerDetails) {
-            if (record[0] == customerName || record[1] == userName || record[2] == password) {
+            if (record[0].equals(customerName) || record[1].equals(userName) || record[2].equals(password)) {
                 break;
             }
         }
@@ -99,7 +99,7 @@ class MockDB {
     /** method that removes a customer record if userName and password supplied */
     public void removeCustomerRecord (String userName, String password) {
         for (String[] record: customerDetails) {
-            if (record[1] == userName && record[2] == password) {
+            if (record[1].equals(userName) && record[2].equals(password)) {
                 customerDetails.remove(record);
                 System.out.println();
                 System.out.println("User " + record[1] + " has been permanently removed.");
@@ -110,13 +110,13 @@ class MockDB {
     /** method that allows a user to change his/her password */
     public void changePassword (String userName, String oldPassword, String newPassword) {
         for (String[] record : customerDetails) {
-            if (record[2] == newPassword) {
+            if (record[2].equals(newPassword)) {
                 System.out.println("Proposed password invalid, select a new password");
                 break;
             }
         }
         for (String[] record: customerDetails) {
-            if (record[1] == userName && record[2] == oldPassword) {
+            if (record[1].equals(userName) && record[2].equals(oldPassword)) {
                 record[2] = newPassword;
                 System.out.println();
                 System.out.println("User " + record[1] + " password has been updated.");
@@ -127,13 +127,13 @@ class MockDB {
     /** method that allows a user to change his/her userName */
     public void changeUserName (String userName, String password, String newUsername) {
         for (String[] record : customerDetails) {
-            if (record[1] == newUsername) {
+            if (record[1].equals(newUsername)) {
                 System.out.println("Proposed user name already exists");
                 break;
             }
         }
         for (String[] record: customerDetails) {
-            if (record[1] == userName && record[2] == password) {
+            if (record[1].equals(userName) && record[2].equals(password)) {
                 record[1] = newUsername;
                 System.out.println();
                 System.out.println("Customer " + record[0] + "'s username has been updated.");
