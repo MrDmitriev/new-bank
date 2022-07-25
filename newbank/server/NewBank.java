@@ -133,7 +133,7 @@ public class NewBank {
 					fromAccount.removeBalance(moveValue);
 					//add <moveValue> to <to> account
 					toAccount.addBalance(moveValue);
-					return "SUCCESS";
+					return "Pending approval from admin of the bank";
 				}
 			}
 		}
@@ -169,7 +169,7 @@ public class NewBank {
 						senderAccount.removeBalance(payValue);
 						//add <moveValue> to <to> account
 						receiverAccount.addBalance(payValue);
-						return "SUCCESS";
+						return "Pending approval from admin of the bank";
 					}
 				}
 			}
