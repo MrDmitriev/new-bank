@@ -98,10 +98,10 @@ class MockDB {
     }
 
     /** getter method sourcing user type using userName */
-    public String getUserTypeFromUserName(String customer) {
+    public String getUserTypeFromUserName(String userName) {
         String result = "";
         for (String[] record: customerDetails) {
-            if (record[1].equals(customer)) {
+            if (record[1].equals(userName)) {
                 result = record[3];
             }
         }
