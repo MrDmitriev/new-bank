@@ -22,7 +22,8 @@
 package newbank.server;
 import java.util.ArrayList;
 
-/** provides a DB simulation with 3 fields: customer as String, userName as String and password as String */
+/** provides a DB simulation with 4 fields: customer as String, userName as String, password as String,
+ * and user type as a String */
 class MockDB {
 
     private static final MockDB db = new MockDB();
@@ -74,7 +75,7 @@ class MockDB {
         return result;
     }
 
-    /** getter method sourcing passord using customerName */
+    /** getter method sourcing password using customerName */
     public static String getPasswordFromCustomerName(String customer) {
         String result = "";
         for (String[] record: customerDetails) {
@@ -85,14 +86,36 @@ class MockDB {
         return result;
     }
 
+    /** getter method sourcing user type using customerName */
+    public String getUserTypeFromCustomerName(String customer) {
+        String result = "";
+        for (String[] record: customerDetails) {
+            if (record[0].equals(customer)) {
+                result = record[3];
+            }
+        }
+        return result;
+    }
+
+    /** getter method sourcing user type using userName */
+    public String getUserTypeFromUserName(String customer) {
+        String result = "";
+        for (String[] record: customerDetails) {
+            if (record[1].equals(customer)) {
+                result = record[3];
+            }
+        }
+        return result;
+    }
+
     /** setter method that creates a new customer */
-    public void createNewCustomer (String customerName, String userName, String  password) {
+    public void createNewCustomer (String customerName, String userName, String  password, String userType) {
         for (String[] record: customerDetails) {
             if (record[0].equals(customerName) || record[1].equals(userName) || record[2].equals(password)) {
                 break;
             }
         }
-        String[] customer = {customerName, userName, password};
+        String[] customer = {customerName, userName, password, userType};
         customerDetails.add(customer);
     }
 
@@ -137,6 +160,17 @@ class MockDB {
                 record[1] = newUsername;
                 System.out.println();
                 System.out.println("Customer " + record[0] + "'s username has been updated.");
+            }
+        }
+    }
+
+    /** method that allows a user to change his/her userName */
+    public void changeUserType (String userName, String password, String newUserType) {
+        for (String[] record: customerDetails) {
+            if (record[1].equals(userName) && record[2].equals(password)) {
+                record[3] = newUserType;
+                System.out.println();
+                System.out.println("Customer " + record[0] + "'s user type has been updated.");
             }
         }
     }
