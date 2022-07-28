@@ -19,23 +19,23 @@ public class TopUp  implements Transaction{
         this.date = date;
         this.status = TopUpStatus.PENDING;
     }
-
+//show status based on setStatus function
     public TopUpStatus getStatus() {
         return status;
     }
-
+//imports the TopUpStatusClass result of 'success','failure' or 'pending'
     public void setStatus(TopUpStatus status) {
         this.status = status;
     }
-
+//show amount of top up
     public double getAmount() {
         return amount;
     }
-
+//show date of topup
     public String getDate() {
         return date;
     }
-
+//show top up confirmation string
     public String toString() {
         return ("£" + amount + " on " + date);
     }
