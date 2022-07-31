@@ -7,8 +7,6 @@ public interface Transaction {
 
     public Object getStatus();
 
-    public Object getDateTime();
-
     public Object getDate();
 
     public String toString();

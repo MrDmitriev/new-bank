@@ -5,7 +5,6 @@
  * MockDB class.
  */
 
-
 package newbank.server;
 
 import java.util.ArrayList;
@@ -18,8 +17,8 @@ class CustomerData {
         loadCustomerData();
     }
 
-
     private void loadCustomerData() {
+
         // data = CustomerData.customerData();
         String[] customer0001 = {"christina","Christina","rwT56", "standard"};
         String[] customer0002 = {"john","John","uI8t5", "standard"};
@@ -44,6 +43,7 @@ class CustomerData {
         storedCustomerData.add(customer0009);
         storedCustomerData.add(customer0010);
         storedCustomerData.add(customer0011);
+
     }
 
     public ArrayList<String[]> getStoredCustomerData() {

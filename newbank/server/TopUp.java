@@ -1,6 +1,6 @@
 package newbank.server;
 
-public class TopUp {
+public class TopUp  implements Transaction{
     private double amount;
     private String date;
     private TopUpStatus status;

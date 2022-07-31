@@ -3,8 +3,9 @@ package newbank.server;
 import java.util.ArrayList;
 
 public class Customer {
-
 	private ArrayList<Account> accounts;
+	private String customerName;
+	private String type;
 
 	public Customer() {
 		accounts = new ArrayList<>();
@@ -27,6 +28,10 @@ public class Customer {
 			}
 		}
 		return null;
+	}
+
+	public String getUserType(){
+		return type;
 	}
 
 	public void addAccount(Account account) {
