@@ -1,5 +1,6 @@
 package newbank.server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class NewBank {
@@ -61,6 +62,8 @@ public class NewBank {
 					return moveBetweenAccounts(customer,request);
 				case "PAY":
 					return makePayment(customer, request);
+				case "VIEWTRANSACTIONS":
+					return viewTransactions(customer);
 				default:
 					return "FAIL";
 			}
@@ -169,11 +172,29 @@ public class NewBank {
 						senderAccount.removeBalance(payValue);
 						//add <moveValue> to <to> account
 						receiverAccount.addBalance(payValue);
+						// Create a transaction to be recorded to a database
+						Transaction transaction = new Transaction(senderID, senderAccount, TransactionAction.PAYMENT, payValue);
 						return "Pending approval from admin of the bank";
 					}
 				}
 			}
 		}
 		return "FAIL";
+	}
+
+	// Allows the user to view transactions
+	private String viewTransactions(CustomerID customerID){
+
+		ArrayList<Transaction> transactionsOfCustomer = MockDB.getTransactions(customerID);
+
+		if (transactionsOfCustomer.size() == 0) {
+			return "Transactions have not been recorded";
+		}
+		else {
+			for(int i = 0; i < transactionsOfCustomer.size(); i++) {
+				System.out.println(transactionsOfCustomer.get(i).getCustomerID() + " " + transactionsOfCustomer.get(i).getAccount().getName() + " " + transactionsOfCustomer.get(i).getAction() + " " + transactionsOfCustomer.get(i).getValue());
+			}
+			return "Transactions have been printed to the console";
+		}
 	}
 }
