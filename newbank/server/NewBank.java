@@ -6,11 +6,11 @@ import java.util.HashMap;
 public class NewBank {
 
 	private static final NewBank bank = new NewBank();
-	private HashMap<String, Customer> customers;
+	private HashMap<String, User> users;
 	private static final int MINIMUM_PARAMETERS_NUMBER = 3;
 
 	private NewBank() {
-		customers = new HashMap<>();
+		users = new HashMap<>();
 		addTestData();
 	}
 
@@ -21,9 +21,16 @@ public class NewBank {
 		// for each customer in the MockDB, create a customer object and a main
 		// account object, putting 1000 in each account
 		for(String[] record: customerData){
-			Customer C = new Customer();
-			C.addAccount(new Account("Main", 1000));
-			customers.put(record[1], C);
+			UserType userType = UserType.valueOf(record[3]);
+			if (userType == UserType.STAFF) {
+				Staff staff = new Staff(record[1]);
+				users.put(record[1], staff);
+			} else {
+				Customer customer = new Customer(record[1], userType);
+				Account mainAccount = new Account("Main", 1000);
+				customer.addAccount(mainAccount);
+				users.put(record[1], customer);
+			}
 		}
 	}
 
@@ -31,18 +38,30 @@ public class NewBank {
 		return bank;
 	}
 
-	public synchronized CustomerID checkLogInDetails(String userName, String password) {
-		if (customers.containsKey(userName)) {
-			return new CustomerID(userName);
+	public synchronized UserID checkLogInDetails(String userName, String password) {
+		if (users.containsKey(userName)) {
+			return new UserID(userName);
 		}
 		return null;
 	}
 
 	// commands from the NewBank customer are processed in this method
-	public synchronized String processRequest(CustomerID customer, String request) {
-		if (customers.containsKey(customer.getKey())) {
-			// command parsing is now based on first word of request
+	public synchronized String processRequest(UserID customer, String request) {
+
+		if (users.containsKey(customer.getKey())) {
+			User user = users.get(customer.getKey());
 			String command = request.split(" ")[0];
+			if (user.getUserType() == UserType.STAFF) {
+				switch (command) {
+					case "SHOWAPPROVETRANSACTIONS":
+						return transactionsPending();
+					case "APPROVETOPUP":
+						return approveTopUp(request);
+					default:
+						return "FAIL";
+				}
+			} else {
+				// command parsing is now based on first word of request
 			switch (command) {
 				case "SHOWMYACCOUNTS":
 					return showMyAccounts(customer);
@@ -58,15 +77,52 @@ public class NewBank {
 					return "FAIL";
 			}
 		}
+	}
+	return "FAIL";
+}
+
+private String approveTopUp(String request) {
+	System.out.println(request);
+	Customer customer = (Customer) users.get(request.split(" ")[1]);
+	if (customer == null) {
 		return "FAIL";
 	}
+	for (Account a : customer.getAccounts()) {
+		for (TopUp t : a.pendingTopUps()) {
+			a.addBalance(t.getAmount());
+			a.addtoTransactions(t);
+			t.setStatus(TopUpStatus.SUCCESS);
+		}
+		a.clearPendingTopUps();
+	}
+	return "SUCCESS";
+}
 
-	private String showMyAccounts(CustomerID customer) {
-		return (customers.get(customer.getKey())).accountsToString();
+	private String transactionsPending() {
+		String pendingTopUps = "";
+		for (User user : users.values()) {
+			if (user.getUserType() != UserType.STAFF) {
+				Customer customer = (Customer) user;
+				for (Account account : customer.getAccounts()) {
+					if (account.pendingTopUps().size() > 0) {
+						for (TopUp topUp : account.pendingTopUps()) {
+							pendingTopUps += customer.getCustomerName() + " " + account.getName() + " "
+									+ topUp.getAmount()
+									+ "\n";
+						}
+					}
+				}
+			}
+		}
+		return pendingTopUps;
 	}
 
-	private String topUpAccount(CustomerID customerID, String request) {
-		Customer customer = customers.get(customerID.getKey());
+	private String showMyAccounts(UserID customer) {
+		return ((Customer) users.get(customer.getKey())).accountsToString();
+	}
+
+	private String topUpAccount(UserID customerID, String request) {
+		Customer customer = (Customer) users.get(customerID.getKey());
 		// request is in the form of "TOPUPACCOUNT ACCOUNTNAME AMOUNT"
 		// so we need to split the request into 3 parts
 		String[] tokens = request.split(" ");
@@ -82,7 +138,7 @@ public class NewBank {
 	}
 
 	// this function creates a new account
-	private String createNewAccount(CustomerID customerID, String request) {
+	private String createNewAccount(UserID customerID, String request) {
 		// request is in the form of "NEWACCOUNT ACCOUNTNAME OPENINGBALANCE"
 		String[] tokens = request.split(" ");
 
@@ -90,7 +146,7 @@ public class NewBank {
 			return "FAIL - Account name or initial balance is missing";
 		}
 		if (tokens.length == MINIMUM_PARAMETERS_NUMBER) {
-			Customer customer = customers.get(customerID.getKey());
+			Customer customer = (Customer) users.get(customerID.getKey());
 			String accountName = tokens[1];
 			Double initialBalance = Double.parseDouble(tokens[2]);
 
@@ -108,11 +164,11 @@ public class NewBank {
 	// should only be allowed if:
 	// 1. Both accounts exist and are owned by the requesting (logged in) member
 	// 2. The account money is being withdrawn from has sufficient balance
-	private String moveBetweenAccounts(CustomerID customerID, String request){
+	private String moveBetweenAccounts(UserID customerID, String request) {
 		// request is in the form of "MOVE <value> <from account name> <to account name>"
 		String[] tokens = request.split(" ");
 		if (tokens.length == 4){
-			Customer customer = customers.get(customerID.getKey());
+			Customer customer = (Customer) users.get(customerID.getKey());
 			double moveValue = Double.parseDouble(tokens[1]);
 			Account fromAccount = customer.getAccount(tokens[2]);
 			Account toAccount = customer.getAccount(tokens[3]);
@@ -136,21 +192,21 @@ public class NewBank {
 	//allows logged in customer to make a payment to another customer
 	// NOTE: currently assumes that all users have a 'Main' account, and assumes this is where
 	//       all payments are made and received
-	private String makePayment(CustomerID senderID, String request){
+	private String makePayment(UserID senderID, String request) {
 		// request is in the form of "PAY <Person/Company> <amount>"
 		String[] tokens = request.split(" ");
 
 		// input must have the correct number of arguments to try to proceed
 		if (tokens.length == 3){
-			Customer sender = customers.get(senderID.getKey());
-			CustomerID receiverID = new CustomerID(tokens[1]);
+			Customer sender = (Customer) users.get(senderID.getKey());
+			UserID receiverID = new UserID(tokens[1]);
 			double payValue = Double.parseDouble(tokens[2]);
 			Account senderAccount = sender.getAccount("Main");
 
 			// if the account to make payment to can be found
 			// (for the customer/company not making the payment)
-			if(customers.containsKey(receiverID.getKey())){
-				Customer receiver = customers.get(receiverID.getKey());
+			if (users.containsKey(receiverID.getKey())) {
+				Customer receiver = (Customer) users.get(receiverID.getKey());
 				Account receiverAccount = receiver.getAccount("Main");
 
 				//only attempts to make payment if both sending and receiving accounts can be found

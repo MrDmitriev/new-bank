@@ -9,6 +9,7 @@ public class Account {
 	private double openingBalance;
 	private double currentBalance;
 	private ArrayList<Transaction> transactions;
+	private ArrayList<TopUp> pendingTopUps;
 
 	//Create local variables for account name and opening balance within account
 	//also creates an array of transactions associated with the account where TopUps, Transfers etc. are stored
@@ -16,7 +17,8 @@ public class Account {
 		this.accountName = accountName;
 		this.openingBalance = openingBalance;
 		this.currentBalance = openingBalance;
-		this.transactions = new ArrayList<Transaction>();
+		transactions = new ArrayList<Transaction>();
+		pendingTopUps = new ArrayList<TopUp>();
 	}
 
 	//return account name
@@ -26,7 +28,11 @@ public class Account {
 
 	public void topUpAccount(double amount) {
 		TopUp topUp = new TopUp(amount, new Date().toString());
-		transactions.add(topUp);
+		pendingTopUps.add(topUp);
+	}
+
+	public ArrayList<TopUp> pendingTopUps() {
+		return pendingTopUps;
 	}
 
 	//return account balance
@@ -57,6 +63,18 @@ public class Account {
 	//return account name and opening balance
 	public String toString() {
 		return (accountName + ": " + currentBalance);
+	}
+
+	public void removePendingTopUp(Transaction t) {
+		pendingTopUps.remove(t);
+	}
+
+	public void addtoTransactions(Transaction t) {
+		transactions.add(t);
+	}
+
+	public void clearPendingTopUps() {
+		pendingTopUps.clear();
 	}
 
 }
