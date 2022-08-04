@@ -35,7 +35,13 @@ public class NewBankClientHandler extends Thread{
 			UserID customer = userAuthorisation.getUserID();
 			// if the user is authenticated then get requests from the user and process them 
 			if(userAuthorisation.userAuthorised() == true && customer != null) {
-				out.println("Log In Successful. What do you want to do?");
+				out.println("Log In Successful. \nPlease enter a command from the following list (leave spaces indicated by '+':\n" +
+						"1)SHOWMYACCOUNTS\n" +
+						"2)TOPUPACCOUNT + 'Account Name' + 'Top up amount'\n" +
+						"3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
+						"4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
+						"5)PAY + 'Name of User' + 'Amount\n" +
+						"6)LOGOUT");
 				while(true) {
 					String request = in.readLine();
 					System.out.println("Request from " + customer.getKey());
