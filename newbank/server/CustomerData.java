@@ -20,10 +20,11 @@ class CustomerData {
     private void loadCustomerData() {
 
         // data = CustomerData.customerData();
+        // customer: {users first name, username, password, user type}
         String[] customer0001 = { "christina", "Christina", "rwT56", "STANDARD" };
         String[] customer0002 = { "john", "John", "uI8t5", "STANDARD" };
         String[] customer0003 = { "mary", "Mary", "yh*I", "STANDARD" };
-        String[] customer0004 = { "bhagy", "Bhagy", "Lki87", "STANDARD" };
+        String[] customer0004 = { "bhagy", "Bhagy", "qwerty", "STANDARD" };
         String[] customer0005 = { "theobald", "Theobald", "Kj8yt", "STANDARD" };
         String[] customer0006 = { "frankie", "Frankie", "HmF55", "STANDARD" };
         String[] customer0007 = { "robert", "Robert", "yU872", "STANDARD" };
