@@ -64,21 +64,21 @@ public class NewBank {
 				// command parsing is now based on first word of request
 			switch (command) {
 				case "SHOWMYACCOUNTS":
-					return showMyAccounts(customer);
+					return showMyAccounts(customer) + commandList();
 				case "TOPUPACCOUNT":
-					return topUpAccount(customer, request);
+					return topUpAccount(customer, request) + commandList();
 				case "NEWACCOUNT":
-					return createNewAccount(customer, request);
+					return createNewAccount(customer, request) + commandList();
 				case "MOVE":
-					return moveBetweenAccounts(customer,request);
+					return moveBetweenAccounts(customer,request) + commandList();
 				case "PAY":
-					return makePayment(customer, request);
+					return makePayment(customer, request) + commandList();
 				default:
-					return "FAIL";
+					return "FAIL" + commandList();
 			}
 		}
 	}
-	return "FAIL";
+	return "FAIL" + commandList();
 }
 
 private String approveTopUp(String request) {
@@ -224,5 +224,14 @@ private String approveTopUp(String request) {
 			}
 		}
 		return "FAIL";
+	}
+	private String commandList(){
+	 return "\nPlease enter a command from the following list (leave spaces indicated by '+':\n" +
+		 "1)SHOWMYACCOUNTS\n" +
+		 "2)TOPUPACCOUNT + 'Account Name' + 'Top up amount'\n" +
+		 "3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
+		 "4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
+		 "5)PAY + 'Name of User' + 'Amount\n" +
+		 "6)LOGOUT";
 	}
 }

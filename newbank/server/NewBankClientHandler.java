@@ -78,7 +78,14 @@ public class NewBankClientHandler extends Thread{
 
 			// Handle successful authentication
 			if (isUserAuthenticated) {
-				out.println("Log In Successful. What do you want to do?");
+				out.println("Log In Successful. \nPlease enter a command from the following list (leave spaces indicated by '+':\n" +
+				"1)SHOWMYACCOUNTS\n" +
+				"2)TOPUPACCOUNT + 'Account Name' + 'Top up amount'\n" +
+				"3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
+				"4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
+				"5)PAY + 'Name of User' + 'Amount\n" +
+				"6)LOGOUT");
+
 				// generate user ID token from bank for use in subsequent requests
 				UserID userId = new UserID(username);
 
