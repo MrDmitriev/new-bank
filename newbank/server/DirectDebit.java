@@ -6,6 +6,8 @@ public class DirectDebit implements Transaction {
     private double amount;
     private String status;
     private Date transactionDate;
+    private TransactionAction action;
+    private String account;
 
 
     @Override
@@ -25,6 +27,14 @@ public class DirectDebit implements Transaction {
     public String toString(){
         return ("£" + amount + " on " + transactionDate.toString());
     };
+
+    public TransactionAction getAction() {
+        return action;
+    }
+
+    public String getAccount() {
+        return account;
+    }
 
 
 }

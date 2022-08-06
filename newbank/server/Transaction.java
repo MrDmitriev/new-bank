@@ -11,4 +11,8 @@ public interface Transaction {
 
     public String toString();
 
+    public TransactionAction getAction();
+
+    public String getAccount();
+
 }

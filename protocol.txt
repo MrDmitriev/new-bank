@@ -28,3 +28,7 @@ Returns all pending Top UPs or FAIL
 APPROVETOPUP <Name>
 e.g APPROVETOPUP Mary
 Returns SUCCESS or FAIL after all topups for that user are approved
+
+VIEWTRANSACTIONS
+Returns transactions printed to a console of a user
+e.g., John Main TRANSFER 100
