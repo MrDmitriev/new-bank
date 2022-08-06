@@ -182,7 +182,7 @@ class MockDB {
         System.out.println();
         for (String[] record: db.getCustomerDetails()) {
             number ++;
-            System.out.println(String.format("%02d", number) +  "\t Cutomer: " + record[0] + "   Username: " + record[1] +"   Password: " + record[2]);
+            System.out.println(String.format("%02d", number) +  "\t Cutomer: " + record[0] + "   Username: " + record[1] +"   Password: " + record[2] +"   UserType: " + record[3]);
         }
         System.out.println();
     }
