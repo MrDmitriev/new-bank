@@ -21,3 +21,10 @@ Returns SUCCESS or FAIL
 TOPUPACCOUNT <Account> <Amount>
 e.g TOPUPACCOUNT Main 1000
 Returns "Pending approval from admin of the bank" or FAIL
+
+SHOWAPPROVETRANSACTIONS
+Returns all pending Top UPs or FAIL
+
+APPROVETOPUP <Name>
+e.g APPROVETOPUP Mary
+Returns SUCCESS or FAIL after all topups for that user are approved

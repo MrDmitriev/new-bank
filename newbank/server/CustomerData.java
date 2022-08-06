@@ -5,7 +5,6 @@
  * MockDB class.
  */
 
-
 package newbank.server;
 
 import java.util.ArrayList;
@@ -18,20 +17,21 @@ class CustomerData {
         loadCustomerData();
     }
 
-
     private void loadCustomerData() {
+
         // data = CustomerData.customerData();
-        String[] customer0001 = {"christina","Christina","rwT56", "standard"};
-        String[] customer0002 = {"john","John","uI8t5", "standard"};
-        String[] customer0003 = {"mary","Mary","yh*I", "standard"};
-        String[] customer0004 = {"bhagy","Bhagy","Lki87", "standard"};
-        String[] customer0005 = {"theobald","Theobald","Kj8yt", "standard"};
-        String[] customer0006 = {"frankie","Frankie","HmF55", "standard"};
-        String[] customer0007 = {"robert","Robert","yU872", "standard"};
-        String[] customer0008 = {"adrian","Adrian","Nbd43", "standard"};
-        String[] customer0009 = {"luca","Luca","Ot6r5", "standard"};
-        String[] customer0010 = {"indigo","Indigo","nT6n*", "standard"};
-        String[] customer0011 = {"hsbc","HSBC","r$tGH", "corporate"};
+        String[] customer0001 = { "christina", "Christina", "rwT56", "STANDARD" };
+        String[] customer0002 = { "john", "John", "uI8t5", "STANDARD" };
+        String[] customer0003 = { "mary", "Mary", "yh*I", "STANDARD" };
+        String[] customer0004 = { "bhagy", "Bhagy", "Lki87", "STANDARD" };
+        String[] customer0005 = { "theobald", "Theobald", "Kj8yt", "STANDARD" };
+        String[] customer0006 = { "frankie", "Frankie", "HmF55", "STANDARD" };
+        String[] customer0007 = { "robert", "Robert", "yU872", "STANDARD" };
+        String[] customer0008 = { "adrian", "Adrian", "Nbd43", "STANDARD" };
+        String[] customer0009 = { "luca", "Luca", "Ot6r5", "STANDARD" };
+        String[] customer0010 = { "indigo", "Indigo", "nT6n*", "STANDARD" };
+        String[] customer0011 = { "hsbc", "HSBC", "r$tGH", "CORPORATE" };
+        String[] customer0012 = { "bill", "Bill", "clinton", "STAFF" };
 
         storedCustomerData.add(customer0001);
         storedCustomerData.add(customer0002);
@@ -44,6 +44,8 @@ class CustomerData {
         storedCustomerData.add(customer0009);
         storedCustomerData.add(customer0010);
         storedCustomerData.add(customer0011);
+        storedCustomerData.add(customer0012);
+
     }
 
     public ArrayList<String[]> getStoredCustomerData() {

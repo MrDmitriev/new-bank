@@ -1,9 +1,11 @@
 package newbank.server;
 
-public class TopUp {
+public class TopUp  implements Transaction{
     private double amount;
     private String date;
     private TopUpStatus status;
+    private TransactionAction action;
+    private String account;
     /*
      * Idea here is that each time a customer top ups an account, a new TopUp object
      * is created.
@@ -18,25 +20,36 @@ public class TopUp {
         this.amount = amount;
         this.date = date;
         this.status = TopUpStatus.PENDING;
+        this.action = TransactionAction.TOPUP;
     }
-
+//show status based on setStatus function
     public TopUpStatus getStatus() {
         return status;
     }
-
+//imports the TopUpStatusClass result of 'success','failure' or 'pending'
     public void setStatus(TopUpStatus status) {
         this.status = status;
     }
-
+//show amount of top up
     public double getAmount() {
         return amount;
     }
-
+//show date of topup
     public String getDate() {
         return date;
     }
-
+//show top up confirmation string
     public String toString() {
         return ("£" + amount + " on " + date);
+    }
+
+    // returns an action of a transaction
+    public TransactionAction getAction() {
+        return action;
+    }
+
+    // returns a string of an account of a user
+    public String getAccount() {
+        return account;
     }
 }

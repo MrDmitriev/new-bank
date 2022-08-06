@@ -6,51 +6,62 @@ import java.util.HashMap;
 public class NewBank {
 
 	private static final NewBank bank = new NewBank();
-	private HashMap<String, Customer> customers;
+	private HashMap<String, User> users;
 	private static final int MINIMUM_PARAMETERS_NUMBER = 3;
 
 	private NewBank() {
-		customers = new HashMap<>();
+		users = new HashMap<>();
 		addTestData();
 	}
 
 	private void addTestData() {
-//create customer object for bhagy
-		Customer bhagy = new Customer();
-//add account to list of type main with 1000
-		bhagy.addAccount(new Account("Main", 1000.0));
-//add bhagy to customers
-		customers.put("Bhagy", bhagy);
-//create customer for christina
-		Customer christina = new Customer();
-//add account to list of type savings with 1500
-		christina.addAccount(new Account("Savings", 1500.0));
-//add christina to customers
-		customers.put("Christina", christina);
-//create customer object for john
-		Customer john = new Customer();
-//add account for john of type checking with 250
-		john.addAccount(new Account("Checking", 250.0));
-//add john to customers
-		customers.put("John", john);
+		MockDB db = MockDB.getMockDB();
+		ArrayList<String[]> customerData =  db.getCustomerDetails();
+
+		// for each customer in the MockDB, create a customer object and a main
+		// account object, putting 1000 in each account
+		for(String[] record: customerData){
+			UserType userType = UserType.valueOf(record[3]);
+			if (userType == UserType.STAFF) {
+				Staff staff = new Staff(record[1]);
+				users.put(record[1], staff);
+			} else {
+				Customer customer = new Customer(record[1], userType);
+				Account mainAccount = new Account("Main", 1000);
+				customer.addAccount(mainAccount);
+				users.put(record[1], customer);
+			}
+		}
 	}
 
 	public static NewBank getBank() {
 		return bank;
 	}
 
-	public synchronized CustomerID checkLogInDetails(String userName, String password) {
-		if (customers.containsKey(userName)) {
-			return new CustomerID(userName);
+	public synchronized UserID checkLogInDetails(String userName, String password) {
+		if (users.containsKey(userName)) {
+			return new UserID(userName);
 		}
 		return null;
 	}
 
 	// commands from the NewBank customer are processed in this method
-	public synchronized String processRequest(CustomerID customer, String request) {
-		if (customers.containsKey(customer.getKey())) {
-			// command parsing is now based on first word of request
+	public synchronized String processRequest(UserID customer, String request) {
+
+		if (users.containsKey(customer.getKey())) {
+			User user = users.get(customer.getKey());
 			String command = request.split(" ")[0];
+			if (user.getUserType() == UserType.STAFF) {
+				switch (command) {
+					case "SHOWAPPROVETRANSACTIONS":
+						return transactionsPending();
+					case "APPROVETOPUP":
+						return approveTopUp(request);
+					default:
+						return "FAIL";
+				}
+			} else {
+				// command parsing is now based on first word of request
 			switch (command) {
 				case "SHOWMYACCOUNTS":
 					return showMyAccounts(customer);
@@ -68,15 +79,52 @@ public class NewBank {
 					return "FAIL";
 			}
 		}
+	}
+	return "FAIL";
+}
+
+private String approveTopUp(String request) {
+	System.out.println(request);
+	Customer customer = (Customer) users.get(request.split(" ")[1]);
+	if (customer == null) {
 		return "FAIL";
 	}
+	for (Account a : customer.getAccounts()) {
+		for (TopUp t : a.pendingTopUps()) {
+			a.addBalance(t.getAmount());
+			a.addtoTransactions(t);
+			t.setStatus(TopUpStatus.SUCCESS);
+		}
+		a.clearPendingTopUps();
+	}
+	return "SUCCESS";
+}
 
-	private String showMyAccounts(CustomerID customer) {
-		return (customers.get(customer.getKey())).accountsToString();
+	private String transactionsPending() {
+		String pendingTopUps = "";
+		for (User user : users.values()) {
+			if (user.getUserType() != UserType.STAFF) {
+				Customer customer = (Customer) user;
+				for (Account account : customer.getAccounts()) {
+					if (account.pendingTopUps().size() > 0) {
+						for (TopUp topUp : account.pendingTopUps()) {
+							pendingTopUps += customer.getCustomerName() + " " + account.getName() + " "
+									+ topUp.getAmount()
+									+ "\n";
+						}
+					}
+				}
+			}
+		}
+		return pendingTopUps;
 	}
 
-	private String topUpAccount(CustomerID customerID, String request) {
-		Customer customer = customers.get(customerID.getKey());
+	private String showMyAccounts(UserID customer) {
+		return ((Customer) users.get(customer.getKey())).accountsToString();
+	}
+
+	private String topUpAccount(UserID customerID, String request) {
+		Customer customer = (Customer) users.get(customerID.getKey());
 		// request is in the form of "TOPUPACCOUNT ACCOUNTNAME AMOUNT"
 		// so we need to split the request into 3 parts
 		String[] tokens = request.split(" ");
@@ -92,15 +140,15 @@ public class NewBank {
 	}
 
 	// this function creates a new account
-	private String createNewAccount(CustomerID customerID, String request) {
-		// request is in the form of "NEWACCOUNT ACCOUNTNAME"
+	private String createNewAccount(UserID customerID, String request) {
+		// request is in the form of "NEWACCOUNT ACCOUNTNAME OPENINGBALANCE"
 		String[] tokens = request.split(" ");
 
 		if (tokens.length < MINIMUM_PARAMETERS_NUMBER) {
 			return "FAIL - Account name or initial balance is missing";
 		}
 		if (tokens.length == MINIMUM_PARAMETERS_NUMBER) {
-			Customer customer = customers.get(customerID.getKey());
+			Customer customer = (Customer) users.get(customerID.getKey());
 			String accountName = tokens[1];
 			Double initialBalance = Double.parseDouble(tokens[2]);
 
@@ -118,11 +166,11 @@ public class NewBank {
 	// should only be allowed if:
 	// 1. Both accounts exist and are owned by the requesting (logged in) member
 	// 2. The account money is being withdrawn from has sufficient balance
-	private String moveBetweenAccounts(CustomerID customerID, String request){
+	private String moveBetweenAccounts(UserID customerID, String request) {
 		// request is in the form of "MOVE <value> <from account name> <to account name>"
 		String[] tokens = request.split(" ");
 		if (tokens.length == 4){
-			Customer customer = customers.get(customerID.getKey());
+			Customer customer = (Customer) users.get(customerID.getKey());
 			double moveValue = Double.parseDouble(tokens[1]);
 			Account fromAccount = customer.getAccount(tokens[2]);
 			Account toAccount = customer.getAccount(tokens[3]);
@@ -146,21 +194,21 @@ public class NewBank {
 	//allows logged in customer to make a payment to another customer
 	// NOTE: currently assumes that all users have a 'Main' account, and assumes this is where
 	//       all payments are made and received
-	private String makePayment(CustomerID senderID, String request){
+	private String makePayment(UserID senderID, String request) {
 		// request is in the form of "PAY <Person/Company> <amount>"
 		String[] tokens = request.split(" ");
 
 		// input must have the correct number of arguments to try to proceed
 		if (tokens.length == 3){
-			Customer sender = customers.get(senderID.getKey());
-			CustomerID receiverID = new CustomerID(tokens[1]);
+			Customer sender = (Customer) users.get(senderID.getKey());
+			UserID receiverID = new UserID(tokens[1]);
 			double payValue = Double.parseDouble(tokens[2]);
 			Account senderAccount = sender.getAccount("Main");
 
 			// if the account to make payment to can be found
 			// (for the customer/company not making the payment)
-			if(customers.containsKey(receiverID.getKey())){
-				Customer receiver = customers.get(receiverID.getKey());
+			if (users.containsKey(receiverID.getKey())) {
+				Customer receiver = (Customer) users.get(receiverID.getKey());
 				Account receiverAccount = receiver.getAccount("Main");
 
 				//only attempts to make payment if both sending and receiving accounts can be found
@@ -173,7 +221,6 @@ public class NewBank {
 						//add <moveValue> to <to> account
 						receiverAccount.addBalance(payValue);
 						// Create a transaction to be recorded to a database
-						Transaction transaction = new Transaction(senderID, senderAccount, TransactionAction.PAYMENT, payValue);
 						return "Pending approval from admin of the bank";
 					}
 				}
@@ -183,16 +230,16 @@ public class NewBank {
 	}
 
 	// Allows the user to view transactions
-	private String viewTransactions(CustomerID customerID){
+	private String viewTransactions(UserID customerID){
 
-		ArrayList<Transaction> transactionsOfCustomer = MockDB.getTransactions(customerID);
+		ArrayList<Transaction> transactionsOfCustomer = users.get(customerID.getKey()).getAccount("Main").getTransactions();
 
 		if (transactionsOfCustomer.size() == 0) {
 			return "Transactions have not been recorded";
 		}
 		else {
 			for(int i = 0; i < transactionsOfCustomer.size(); i++) {
-				System.out.println(transactionsOfCustomer.get(i).getCustomerID() + " " + transactionsOfCustomer.get(i).getAccount().getName() + " " + transactionsOfCustomer.get(i).getAction() + " " + transactionsOfCustomer.get(i).getValue());
+				System.out.println(customerID.getKey() + " " + transactionsOfCustomer.get(i).getAccount() + " " + transactionsOfCustomer.get(i).getAction() + " " + transactionsOfCustomer.get(i).getAmount());
 			}
 			return "Transactions have been printed to the console";
 		}

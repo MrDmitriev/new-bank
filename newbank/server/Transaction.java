@@ -1,32 +1,18 @@
 package newbank.server;
 
-public class Transaction {
+public interface Transaction {
 
-    private CustomerID customerID;
-    private Account account;
-    private TransactionAction action;
-    private double value;
+    // All transactions have a value, this gets the value of the transaction
+    public double getAmount();
 
-    public Transaction(CustomerID customerID, Account account, TransactionAction action, double value) {
-        this.customerID = customerID;
-        this.account = account;
-        this.action = action;
-        this.value = value;
-    }
+    public Object getStatus();
 
-    public CustomerID getCustomerID() {
-        return customerID;
-    }
+    public Object getDate();
 
-    public Account getAccount() {
-        return account;
-    }
+    public String toString();
 
-    public TransactionAction getAction() {
-        return action;
-    }
+    public TransactionAction getAction();
 
-    public double getValue() {
-        return value;
-    }
+    public String getAccount();
+
 }

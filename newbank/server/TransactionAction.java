@@ -1,5 +1,7 @@
 package newbank.server;
 
 public enum TransactionAction {
-    PAYMENT
+    PAYMENT,
+    TRANSFER,
+    TOPUP,
 }

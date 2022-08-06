@@ -28,7 +28,6 @@ class MockDB {
 
     private static final MockDB db = new MockDB();
     private static ArrayList<String[]> customerDetails;
-    private static ArrayList<Transaction> transactions;
    // private final CustomerData data;
 
     /** Create a new mock database and populate it with records */
@@ -36,7 +35,6 @@ class MockDB {
         CustomerData data = new CustomerData();
         customerDetails = new ArrayList<String[]>();
         customerDetails = data.getStoredCustomerData();
-        transactions = new ArrayList<Transaction>();
     }
 
     /** getter method returning the custmerDetails ArrayList */
@@ -191,28 +189,4 @@ class MockDB {
         return db;
     }
 
-    // Records a transaction to transactions in the database
-    public static void recordTransaction(Transaction transaction) {
-
-        if (transaction.getCustomerID() == null || transaction.getAccount() == null || transaction.getAction() == null || transaction.getValue() == 0) {
-            System.out.println("Try to record a transaction again");
-        }
-        else {
-            transactions.add(transaction);
-        }
-    }
-
-    // Gets transactions of customer from transactions in the database
-    public static ArrayList<Transaction> getTransactions(CustomerID customerID) {
-
-        ArrayList<Transaction> transactionsOfCustomer = new ArrayList<Transaction>();
-
-        for (int i = 0; i < transactions.size(); i++) {
-            if(transactions.get(i).getCustomerID() == customerID) {
-                transactionsOfCustomer.add(transactions.get(i));
-            }
-        }
-
-        return transactionsOfCustomer;
-    }
 }

@@ -2,12 +2,19 @@ package newbank.server;
 
 import java.util.ArrayList;
 
-public class Customer {
-
+public class Customer implements User {
 	private ArrayList<Account> accounts;
+	private String customerName;
+	private UserType userType;
 
-	public Customer() {
+	public Customer(String customerName, UserType userType) {
+		this.customerName = customerName;
+		this.userType = userType;
 		accounts = new ArrayList<>();
+	}
+
+	public String getCustomerName() {
+		return customerName;
 	}
 
 	//create string of all accounts
@@ -17,6 +24,10 @@ public class Customer {
 			s += a.toString();
 		}
 		return s;
+	}
+
+	public ArrayList<Account> getAccounts() {
+		return accounts;
 	}
 
 	//get account details
@@ -29,7 +40,12 @@ public class Customer {
 		return null;
 	}
 
+
 	public void addAccount(Account account) {
 		accounts.add(account);
+	}
+
+	public UserType getUserType() {
+		return userType;
 	}
 }
