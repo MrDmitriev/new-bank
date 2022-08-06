@@ -1,6 +1,7 @@
 package newbank.server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class NewBank {
@@ -8,15 +9,17 @@ public class NewBank {
 	private static final NewBank bank = new NewBank();
 	private HashMap<String, User> users;
 	private static final int MINIMUM_PARAMETERS_NUMBER = 3;
+	private final MockDB db = MockDB.getMockDB();
+	private ArrayList<String[]> customerData =  new ArrayList<String[]>();
 
 	private NewBank() {
 		users = new HashMap<>();
 		addTestData();
+
 	}
 
 	private void addTestData() {
-		MockDB db = MockDB.getMockDB();
-		ArrayList<String[]> customerData =  db.getCustomerDetails();
+		customerData =  db.getCustomerDetails();
 
 		// for each customer in the MockDB, create a customer object and a main
 		// account object, putting 1000 in each account
@@ -57,6 +60,16 @@ public class NewBank {
 						return transactionsPending();
 					case "APPROVETOPUP":
 						return approveTopUp(request);
+					case "LISTUSERS":
+						return listUsers();
+					case "CREATEUSER":
+						return createUser(request);
+					case "DELETEUSER":
+						return deleteUser(request);
+					case "EDITUSERPASSWORD":
+						return editUserPassword(request);
+					case "EDITUSERNAME":
+						return editUserName(request);
 					default:
 						return "FAIL";
 				}
@@ -225,4 +238,120 @@ private String approveTopUp(String request) {
 		}
 		return "FAIL";
 	}
+
+	/**
+	 * List all users contained in MockDB database.
+	 * Produces a list as customer, username, password, usertype
+	 */
+	private String listUsers() {
+		System.out.println();
+		db.listCustomerRecords();
+		/** uncomment to test that customerData arraylist updates after a change to customer data
+		 * for (String[] record: customerData) {
+		 * System.out.println("Cutomer: " + record[0] + " User Name: " + record[1] + " Password: " + record[2] );
+		 * }
+		 */
+		System.out.println();
+		return "SUCCESS";
+	}
+
+	/**
+	 * Method that allows STAFF user types to create a new customer
+	 * CREATEUSER newCustomerName, newUserName, newPassword, newUserType
+	 */
+	private String createUser(String request) {
+		System.out.println(request);
+		ArrayList<String> newUser = new ArrayList<>(Arrays.asList(request.split(" ")).subList(0, 5));
+		for (int i = 0; i < 5; i++) {
+			if (newUser.get(i) == null) {
+				return "FAIL";
+			}
+		}
+		for (UserType uType: UserType.values()) {
+			if (newUser.get(4).equals(uType.toString())) {
+				System.out.println(uType.toString());
+				String[] record = {newUser.get(1), newUser.get(2), newUser.get(3), newUser.get(4)}; // IS THIS 4TH PARAMETER NEEDED?
+				db.createNewCustomer(newUser.get(1), newUser.get(2), newUser.get(3), newUser.get(4));
+				return "SUCCESS";
+				}
+			}
+		return "FAIL";
+	}
+
+	/**
+	 * Method that allows STAFF user types to delete an existing customer
+	 * DELETEUSER customerName, userName, password deletes the entire record
+	 * for customerName
+	 */
+	private String deleteUser(String request) {
+		System.out.println(request);
+
+		ArrayList<String> customerDetails = new ArrayList<>(Arrays.asList(request.split(" ")).subList(0, 4));
+
+		for (int i = 0; i < 4; i++) {
+			if (customerDetails.get(i) == null) {
+				return "FAIL";
+			}
+		}
+
+		for (String[] record : db.getCustomerDetails()) {
+			if (customerDetails.get(1).equals(record[0])) {
+				db.removeCustomerRecord(customerDetails.get(2), customerDetails.get(3));
+				//db.getCustomerDetails().remove(record);
+				return "SUCCESS";
+			}
+		}
+
+		return "FAIL";
+	}
+
+	/**
+	 * Method that allows STAFF user to edit an existing customer's password.
+	 * EDITUSERPASSWORD customerName, userName, existingPassword, newPassword
+	 */
+
+	private String editUserPassword(String request) {
+		System.out.println(request);
+
+		ArrayList<String> requestDetails = new ArrayList<>(Arrays.asList(request.split(" ")).subList(0, 5));
+
+		for (int i = 0; i < 5; i++) {
+			if (requestDetails.get(i) == null) {
+				return "FAIL";
+			}
+		}
+		// capture new password selection in variable newPassword
+		String newPassword = requestDetails.get(4);
+		for (String[] record : db.getCustomerDetails()) {
+			if (requestDetails.get(1).equals(record[0])) {
+				(db.getCustomerDetails().get(db.getCustomerDetails().indexOf(record)))[2] = newPassword;
+				return "SUCCESS";
+			}
+		}
+		return "FAIL";
+	}
+
+	/**
+	 * Method that allows STAFF user to edit an existing customer's userName.
+	 * EDITUSERNAME customerName, existingUserName, password, newUserName
+	 */
+	private String editUserName(String request) {
+		System.out.println(request);
+
+		ArrayList<String> requestDetails = new ArrayList<>(Arrays.asList(request.split(" ")).subList(0, 5));
+
+		for (int i = 0; i < 5; i++) {
+			if (requestDetails.get(i) == null) {
+				return "FAIL";
+			}
+		}
+		for (String[] record : db.getCustomerDetails()) {
+			if (requestDetails.get(1).equals(record[0])) {
+				(db.getCustomerDetails().get(db.getCustomerDetails().indexOf(record)))[1] = requestDetails.get(4);
+				return "SUCCESS";
+			}
+		}
+		return "FAIL";
+	}
+
 }
