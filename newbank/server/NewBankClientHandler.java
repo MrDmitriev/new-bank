@@ -24,12 +24,15 @@ public class NewBankClientHandler extends Thread{
 	public void run() {
 		// keep getting requests from the client and processing them
 		try {
-			out.println("Welcome to the NewBank");
-			out.println("Select any command from main menu:");
-			out.println("1. LOGIN");
-			out.println("2. EXIT");
-
-			String command = in.readLine();
+			while (true) {
+				out.println("Welcome to the NewBank");
+				out.println("Select any command from main menu:");
+				out.println("1. LOGIN");
+				out.println("2. EXIT");
+	
+				String command = in.readLine();
+	
+				out.println("You have selected" + command);
 			
 			switch (command) {
 				case "LOGIN":
@@ -39,10 +42,14 @@ public class NewBankClientHandler extends Thread{
 				case "2":
 					handleExit();
 			}
+		}
+
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		return;
 	}
 
 	private void handleUnsuccessfulAuthentication() throws IOException {
@@ -59,6 +66,8 @@ public class NewBankClientHandler extends Thread{
 
 	private void handleSuccessfulAuthentication(UserID userId) throws IOException {
 		while(true) {
+			System.out.println("handleSuccessfulAuthentication");
+
 			String request = in.readLine();
 			System.out.println("Request from " + userId.getKey());
 			String responce = bank.processRequest(userId, request);
@@ -83,10 +92,10 @@ public class NewBankClientHandler extends Thread{
 				UserID userId = new UserID(username);
 
 				handleSuccessfulAuthentication(userId);
+			} else {
+				// Handle unsuccessful authentication
+				handleUnsuccessfulAuthentication();
 			}
-
-			// Handle unsuccessful authentication
-			handleUnsuccessfulAuthentication();
 		} catch (Exception e) {
 			out.println("An error occured during login: " + e);
 		}
