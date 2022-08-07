@@ -28,11 +28,11 @@ class MockDB {
 
     private static final MockDB db = new MockDB();
     private static ArrayList<String[]> customerDetails;
-   // private final CustomerData data;
+    private final CustomerData data;
 
     /** Create a new mock database and populate it with records */
     public MockDB(){
-        CustomerData data = new CustomerData();
+        data = new CustomerData();
         customerDetails = new ArrayList<String[]>();
         customerDetails = data.getStoredCustomerData();
     }
@@ -121,11 +121,12 @@ class MockDB {
 
     /** method that removes a customer record if userName and password supplied */
     public void removeCustomerRecord (String userName, String password) {
-        for (String[] record: customerDetails) {
+        for (String[] record: getCustomerDetails()) {
             if (record[1].equals(userName) && record[2].equals(password)) {
-                customerDetails.remove(record);
+                getCustomerDetails().remove(record);
                 System.out.println();
                 System.out.println("User " + record[1] + " has been permanently removed.");
+                break;
             }
         }
     }
@@ -177,12 +178,13 @@ class MockDB {
 
     /** print method that prints each record in the customerDetails ArrayList */
     public void listCustomerRecords() {
-        for (String[] record: customerDetails) {
-            System.out.println();
-            System.out.println("Cutomer: " + record[0]);
-            System.out.println("User Name: " + record[1]);
-            System.out.println("Password: " + record[2]);
+        int number = 0;
+        System.out.println();
+        for (String[] record: db.getCustomerDetails()) {
+            number ++;
+            System.out.println(String.format("%02d", number) +  "\t Cutomer: " + record[0] + "   Username: " + record[1] +"   Password: " + record[2] +"   UserType: " + record[3]);
         }
+        System.out.println();
     }
 
     public static MockDB getMockDB() {

@@ -29,6 +29,31 @@ APPROVETOPUP <Name>
 e.g APPROVETOPUP Mary
 Returns SUCCESS or FAIL after all topups for that user are approved
 
+LISTUSERS 
+(available to STAFF userTypes only)
+e.g LISTUSERS
+Returns SUCCESS or FAIL. Lists all users in database
+
+DELETEUSER <customer> <username> <password>
+(available to STAFF userTypes only)
+e.g DELETEUSER hsbc HSBC r$tGH
+Returns SUCCESS or FAIL. deletes entire customer record. In this case, hsbc
+
+CREATEUSER <newCustomerName> <newUsername> <newPassword> <selectUserType>
+(available to STAFF userTypes only)
+e.g CREATEUSER don Don lammy STANDARD
+Returns SUCCESS or FAIL. Creates a new customer with customerName, userName, password and userType
+
+EDITUSERPASSWORD <customer> <username> <existingPassword> <newPassword>
+(available to STAFF userTypes only)
+e.g EDITUSERPASSWORD don Don lammy lamie
+Returns SUCCESS or FAIL. Edit's a customer's password with customerName, userName, existingPassword, newPassword
+
+EDITUSERNAME <customer> <existingUsername> <password> <newUsername>
+(available to STAFF userTypes only)
+e.g EDITUSERNAME don Don lammy Donny
+Returns SUCCESS or FAIL. Edits a customer's username with customerName, existingUserName, password, newUsername
+
 VIEWTRANSACTIONS
 Returns transactions printed to a console of a user
 e.g., John Main TRANSFER 100
