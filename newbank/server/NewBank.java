@@ -112,7 +112,7 @@ private String approveTopUp(String request) {
 	}
 	for (Account a : customer.getAccounts()) {
 		for (TopUp t : a.pendingTopUps()) {
-			a.addBalance(t.getAmount());
+			a.addRemoveBalance(t.getAmount());
 			a.addtoTransactions(t);
 			t.setStatus(TopUpStatus.SUCCESS);
 		}
@@ -202,10 +202,9 @@ private String approveTopUp(String request) {
 					return "FAIL - Insufficient balance in <from> account ";
 				} else {
 					//remove <moveValue> from <from> account
-					fromAccount.removeBalance(moveValue);
+					fromAccount.addRemoveBalance(-moveValue);
 					//add <moveValue> to <to> account
-					toAccount.addBalance(moveValue);
-					return "Pending approval from admin of the bank";
+					toAccount.addRemoveBalance(moveValue);
 				}
 			}
 		}
@@ -238,11 +237,11 @@ private String approveTopUp(String request) {
 						return "FAIL - Insufficient balance in <sender> account ";
 					} else {
 						//remove <moveValue> from <from> account
-						senderAccount.removeBalance(payValue);
+						senderAccount.makeReceivePayment(-payValue, receiver);
 						//add <moveValue> to <to> account
-						receiverAccount.addBalance(payValue);
+						receiverAccount.makeReceivePayment(payValue, sender);
 						// Create a transaction to be recorded to a database
-						return "Pending approval from admin of the bank";
+						return "SUCCESS";
 					}
 				}
 			}
@@ -374,7 +373,8 @@ private String approveTopUp(String request) {
 			return "Transactions have not been recorded";
 		} else {
 			for (int i = 0; i < transactionsOfCustomer.size(); i++) {
-				System.out.println(customerID.getKey() + " " + transactionsOfCustomer.get(i).getAccount() + " " + transactionsOfCustomer.get(i).getAction() + " " + transactionsOfCustomer.get(i).getAmount());
+				//System.out.println(customerID.getKey() + " " + transactionsOfCustomer.get(i).getAccount() + " " + transactionsOfCustomer.get(i).getAction() + " " + transactionsOfCustomer.get(i).getAmount());
+				System.out.println(transactionsOfCustomer.get(i).toString());
 			}
 			return "Transactions have been printed to the console";
 		}
