@@ -14,6 +14,7 @@ class PayableHelper extends TimerTask{
          NewBank bank = NewBank.getBank();
          HashMap<String, User> allUsers;
          ArrayList<Customer> allCustomers = new ArrayList<Customer>();
+         int today = LocalDate.now().getDayOfMonth();
 
          allUsers = bank.getAllUsers();
 
@@ -28,36 +29,29 @@ class PayableHelper extends TimerTask{
                 // for each standard account (these are the ones that contain direct debits)
                 // only look for accounts in standard users (these are the only sources of direct debits or micro loans
                 if (user.getUserType() == UserType.STANDARD){
-                    for(Account account: user.getAccounts()){
+                    Customer customer = (Customer)user;
+
+                    for(Account account: customer.getAccounts()){
                         //System.out.println(account.toString());
 
-                        // for each
+                        // for each direct debit
                         for(DirectDebit directDebit: account.getDirectDebits()){
                             System.out.println(directDebit.toString());
+                            int paymentDay = directDebit.getPaymentDayOfMonth();
+
+                            // if the current day of the month = the scheduled payment day
+                            // of the month, make the payment
+                            if(today == paymentDay){
+                                double amount = directDebit.getRegularPaymentAmount();
+                                Account toAccount = directDebit.getToAccount();
+                                Customer toCustomer = directDebit.getToCustomer();
+
+                                account.makeReceivePayment(-amount,toCustomer);
+                                toAccount.makeReceivePayment(amount, customer);
+                            }
                         }
                     }
                 }
          }
-
-
-         /*
-         Get all customer objects (this equals the whole bank)
-
-            If the customer isn't staff:
-                For Each account:
-                    For Each Payable:
-                        If today is a payment date, make the payment (using toCustomer and toAccount)
-
-         //get accounts
-
-         //for each account check
-         */
-
-
-
-         //System.out.println("This is called " + i++ + " time");
-         UserID serviceUser = new UserID("svc");
-         //String result = bank.processRequest(serviceUser,"LISTUSERS");
-         //System.out.println(result);
      }
 }

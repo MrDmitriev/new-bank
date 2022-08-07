@@ -43,6 +43,7 @@ public class DirectDebit implements Payable {
     public int getPaymentDayOfMonth() {return paymentDayOfMonth;};
     public Object getEndDate() {return endDate;};
     public Account getToAccount(){return toAccount;}
+    public Customer getToCustomer(){return toCustomer;}
     public String toString(){
         return (ID + ": £" + regularPaymentAmount + " to " + toCustomer.getCustomerName() +  " on " + paymentDayOfMonth +"th day of each month between " + startDate.toString() + " and " + endDate.toString());
     };

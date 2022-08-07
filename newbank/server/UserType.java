@@ -4,5 +4,4 @@ public enum UserType {
     STAFF,
     STANDARD,
     CORPORATE,
-    SERVICE
 }

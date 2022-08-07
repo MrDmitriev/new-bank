@@ -9,9 +9,9 @@ import java.util.Timer;
 public class NewBank {
 
 	private static final NewBank bank = new NewBank();
-	private  Timer timer;
-	private  TimerTask task;
-	private HashMap<String, User> users;
+	private final Timer timer;
+	private final TimerTask task;
+	private final HashMap<String, User> users;
 
 
 	private static final int MINIMUM_PARAMETERS_NUMBER = 3;
@@ -22,7 +22,7 @@ public class NewBank {
 		users = new HashMap<>();
 		timer = new Timer();
 		task = new PayableHelper();
-		timer.schedule(task,500, 5000);
+		timer.schedule(task,5000, 86400000);
 		addTestData();
 	}
 
@@ -88,8 +88,6 @@ public class NewBank {
 					default:
 						return "FAIL";
 				}
-			} else if (user.getUserType() == UserType.SERVICE){
-				return listUsers();
 
 			} else {
 				// command parsing is now based on first word of request

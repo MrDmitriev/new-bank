@@ -24,5 +24,4 @@ public class Staff implements User {
 		return accountOfStaff;
 	}
 
-	public ArrayList<Account> getAccounts() {return accounts;}
 }
