@@ -77,21 +77,23 @@ public class NewBank {
 				// command parsing is now based on first word of request
 			switch (command) {
 				case "SHOWMYACCOUNTS":
-					return showMyAccounts(customer);
+					return showMyAccounts(customer) + commandList();
 				case "TOPUPACCOUNT":
-					return topUpAccount(customer, request);
+					return topUpAccount(customer, request) + commandList();
 				case "NEWACCOUNT":
-					return createNewAccount(customer, request);
+					return createNewAccount(customer, request) + commandList();
 				case "MOVE":
-					return moveBetweenAccounts(customer,request);
+					return moveBetweenAccounts(customer,request) + commandList();
 				case "PAY":
-					return makePayment(customer, request);
+					return makePayment(customer, request) + commandList();
+				case "VIEWTRANSACTIONS":
+					return viewTransactions(customer);
 				default:
-					return "FAIL";
+					return "FAIL" + commandList();
 			}
 		}
 	}
-	return "FAIL";
+	return "FAIL" + commandList();
 }
 
 private String approveTopUp(String request) {
@@ -231,6 +233,7 @@ private String approveTopUp(String request) {
 						senderAccount.removeBalance(payValue);
 						//add <moveValue> to <to> account
 						receiverAccount.addBalance(payValue);
+						// Create a transaction to be recorded to a database
 						return "Pending approval from admin of the bank";
 					}
 				}
@@ -354,4 +357,30 @@ private String approveTopUp(String request) {
 		return "FAIL";
 	}
 
+	// Allows the user to view transactions
+	private String viewTransactions(UserID customerID){
+
+		ArrayList<Transaction> transactionsOfCustomer = users.get(customerID.getKey()).getAccount("Main").getTransactions();
+
+		if (transactionsOfCustomer.size() == 0) {
+			return "Transactions have not been recorded";
+		}
+		else {
+			for(int i = 0; i < transactionsOfCustomer.size(); i++) {
+				System.out.println(customerID.getKey() + " " + transactionsOfCustomer.get(i).getAccount() + " " + transactionsOfCustomer.get(i).getAction() + " " + transactionsOfCustomer.get(i).getAmount());
+			}
+			return "Transactions have been printed to the console";
+		}
+
+	private String commandList(){
+	 return "\nPlease enter a command from the following list (leave spaces indicated by '+':\n" +
+		 "1)SHOWMYACCOUNTS\n" +
+		 "2)TOPUPACCOUNT + 'Account Name' + 'Top up amount'\n" +
+		 "3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
+		 "4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
+		 "5)PAY + 'Name of User' + 'Amount\n" +
+     "6) VIEWTRANSACTIONS\n" +
+		 "7)LOGOUT";
+
+	}
 }

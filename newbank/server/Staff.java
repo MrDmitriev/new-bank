@@ -2,11 +2,12 @@ package newbank.server;
 
 public class Staff implements User {
 
+	private String staffName;
+	private Account accountOfStaff;
+
 	public UserType getUserType() {
 		return UserType.STAFF;
 	}
-
-	private String staffName;
 
 	public Staff(String staffName) {
 		this.staffName = staffName;
@@ -14,6 +15,10 @@ public class Staff implements User {
 
 	public String staffName() {
 		return staffName;
+	}
+
+	public Account getAccount(String account) {
+		return accountOfStaff;
 	}
 
 }
