@@ -36,7 +36,7 @@ class PayableHelper extends TimerTask{
 
                         // for each direct debit
                         for(DirectDebit directDebit: account.getDirectDebits()){
-                            System.out.println(directDebit.toString());
+                            //System.out.println(directDebit.toString());
                             int paymentDay = directDebit.getPaymentDayOfMonth();
 
                             // if the current day of the month = the scheduled payment day
