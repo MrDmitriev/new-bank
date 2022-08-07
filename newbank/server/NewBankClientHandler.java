@@ -84,7 +84,11 @@ public class NewBankClientHandler extends Thread{
 				"3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
 				"4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
 				"5)PAY + 'Name of User' + 'Amount\n" +
-				"6)LOGOUT");
+				"6)VIEWTRANSACTIONS\n" +
+				"7)CREATEDIRECTDEBIT + 'corporate user name' + 'Amount' + 'Payment day of month' + 'End date' \n" +
+				"8)VIEWDIRECTDEBITS\n" +
+				"9)CANCELDIRECTDEBITS + 'Direct debit ID' \n" +
+				"10)LOGOUT");
 
 				// generate user ID token from bank for use in subsequent requests
 				UserID userId = new UserID(username);

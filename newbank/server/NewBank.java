@@ -1,8 +1,10 @@
 package newbank.server;
 
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.time.LocalDate;
 
 public class NewBank {
 
@@ -15,7 +17,6 @@ public class NewBank {
 	private NewBank() {
 		users = new HashMap<>();
 		addTestData();
-
 	}
 
 	private void addTestData() {
@@ -23,6 +24,7 @@ public class NewBank {
 
 		// for each customer in the MockDB, create a customer object and a main
 		// account object, putting 1000 in each account
+		// String is the username (also used as the key)
 		for(String[] record: customerData){
 			UserType userType = UserType.valueOf(record[3]);
 			if (userType == UserType.STAFF) {
@@ -88,6 +90,12 @@ public class NewBank {
 					return makePayment(customer, request) + commandList();
 				case "VIEWTRANSACTIONS":
 					return viewTransactions(customer);
+				case "CREATEDIRECTDEBIT":
+					return createDirectDebit(customer, request) + commandList();
+				case "VIEWDIRECTDEBITS":
+					return viewDirectDebits(customer) + commandList();
+				case "CANCELDIRECTDEBIT":
+					return cancelDirectDebit(customer, request);
 				default:
 					return "FAIL" + commandList();
 			}
@@ -358,19 +366,98 @@ private String approveTopUp(String request) {
 	}
 
 	// Allows the user to view transactions
-	private String viewTransactions(UserID customerID){
+	private String viewTransactions(UserID customerID) {
 
 		ArrayList<Transaction> transactionsOfCustomer = users.get(customerID.getKey()).getAccount("Main").getTransactions();
 
 		if (transactionsOfCustomer.size() == 0) {
 			return "Transactions have not been recorded";
-		}
-		else {
-			for(int i = 0; i < transactionsOfCustomer.size(); i++) {
+		} else {
+			for (int i = 0; i < transactionsOfCustomer.size(); i++) {
 				System.out.println(customerID.getKey() + " " + transactionsOfCustomer.get(i).getAccount() + " " + transactionsOfCustomer.get(i).getAction() + " " + transactionsOfCustomer.get(i).getAmount());
 			}
 			return "Transactions have been printed to the console";
 		}
+	}
+
+	private String viewDirectDebits(UserID customerID) {
+		ArrayList<DirectDebit> directDebitsOfCustomer = users.get(customerID.getKey()).getAccount("Main").getDirectDebits();
+		if (directDebitsOfCustomer.size() == 0) {
+			return "Direct debits have not been recorded";
+		} else {
+			for (int i = 0; i < directDebitsOfCustomer.size(); i++) {
+				System.out.println(directDebitsOfCustomer.get(i).toString());
+			}
+			return "Direct debits have been printed to the console";
+		}
+	}
+
+	private String createDirectDebit(UserID userID, String request){
+	/* request is in the form of
+	CREATEDIRECTDEBIT <toCustomer> <paymentAmount>...
+	<payment day of month> <payment end date (format yyyy-mm-dd)>
+	*/
+		String[] tokens = request.split(" ");
+
+		if(tokens.length == 5){
+			//get from customer and account (assume Main account for both)
+			Customer fromCustomer = (Customer) users.get(userID.getKey());
+			Account fromAccount = fromCustomer.getAccount("Main");
+
+			// try to find to customer from input,
+			UserID toCustomerID = new UserID(tokens[1]);
+			if (users.containsKey(toCustomerID.getKey())){
+				Customer toCustomer = (Customer) users.get(toCustomerID.getKey());
+				Account toAccount = toCustomer.getAccount("Main");
+
+				// only allow direct debits to go to corporate accounts
+				if (toCustomer.getUserType() == UserType.CORPORATE){
+					try {
+						double amount = Double.parseDouble(tokens[2]);
+						int paymentDayOfMonth = Integer.parseInt(tokens[3]);
+						LocalDate endDate = LocalDate.parse(tokens[4]);
+
+						//check if the payment day is valid (must be between 1 and 28)
+						if (paymentDayOfMonth <= 0 || paymentDayOfMonth > 28){
+							return "FAIL - invalid payment day of month (must be between 1 and 28)";
+						}
+						// check if end date is in the future
+						if(endDate.isBefore(LocalDate.now())){
+							return "FAIL - End date cannot be in the past";
+						}
+
+						fromAccount.createDirectDebit(toCustomer, toAccount, amount, paymentDayOfMonth, endDate);
+					}
+					catch (DateTimeParseException e)  {return "FAIL - Invalid input date";}
+					catch (NumberFormatException e)  {return "FAIL - Invalid input for amount or payment day of month";}
+				} else {
+					return "FAIL - Direct debits must be setup with corporate users";
+				}
+			} else {
+				return "FAIL - Receiving account not found";
+			}
+			return "SUCCESS";
+		}
+		return "FAIL";
+	}
+
+	private String cancelDirectDebit(UserID userID, String request){
+		//Takes the form CANCELDIRECTDEBIT <directdebitid>
+		String[] tokens = request.split(" ");
+		if (tokens.length == 2){
+			Customer Customer = (Customer) users.get(userID.getKey());
+			Account Account = Customer.getAccount("Main");
+			String directDebitId = tokens[1];
+			boolean result = Account.cancelDirectDebit(directDebitId);
+			if(result){
+				return "SUCCESS";
+			} else {
+				return "FAIL - Direct Debit not found";
+			}
+		}
+		return "FAIL";
+	}
+
 
 	private String commandList(){
 	 return "\nPlease enter a command from the following list (leave spaces indicated by '+':\n" +
@@ -379,8 +466,10 @@ private String approveTopUp(String request) {
 		 "3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
 		 "4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
 		 "5)PAY + 'Name of User' + 'Amount\n" +
-     "6) VIEWTRANSACTIONS\n" +
-		 "7)LOGOUT";
-
+		 "6)VIEWTRANSACTIONS\n" +
+		 "7)CREATEDIRECTDEBIT + 'corporate user name' + 'Amount' + 'Payment day of month' + 'End date (format yyyy-mm-dd)' \n" +
+		 "8)VIEWDIRECTDEBITS\n" +
+		 "9)CANCELDIRECTDEBITS + 'Direct debit ID' \n" +
+		 "10)LOGOUT";
 	}
 }

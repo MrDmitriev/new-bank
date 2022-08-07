@@ -1,5 +1,6 @@
 package newbank.server;
 //test comment to commit
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -10,6 +11,8 @@ public class Account {
 	private double currentBalance;
 	private ArrayList<Transaction> transactions;
 	private ArrayList<TopUp> pendingTopUps;
+	private ArrayList<Payable> payables;
+	private ArrayList<DirectDebit> directdebits;
 
 	//Create local variables for account name and opening balance within account
 	//also creates an array of transactions associated with the account where TopUps, Transfers etc. are stored
@@ -19,6 +22,8 @@ public class Account {
 		this.currentBalance = openingBalance;
 		transactions = new ArrayList<Transaction>();
 		pendingTopUps = new ArrayList<TopUp>();
+		payables = new ArrayList<Payable>();
+		directdebits = new ArrayList<DirectDebit>();
 	}
 
 	//return account name
@@ -77,7 +82,27 @@ public class Account {
 		pendingTopUps.clear();
 	}
 
-	public ArrayList<Transaction> getTransactions() {
-		return transactions;
+	public ArrayList<Transaction> getTransactions() {return transactions;}
+
+	public ArrayList<DirectDebit> getDirectDebits(){return directdebits;}
+
+	public void createDirectDebit(Customer toCustomer, Account toAccount, double amount, int paymentDayOfMonth, LocalDate endDate){
+		DirectDebit directDebit = new DirectDebit(toCustomer, toAccount, amount, paymentDayOfMonth, endDate);
+		directdebits.add(directDebit);
+	}
+
+	public boolean cancelDirectDebit(String ID){
+		boolean removed = false;
+		DirectDebit ddToRemove = null;
+		for (DirectDebit dd:  getDirectDebits()){
+			if(dd.getID().equals(ID)){
+				ddToRemove = dd;
+			}
+		}
+		if(ddToRemove!=null){
+			getDirectDebits().remove(ddToRemove);
+			removed = true;
+		}
+		return removed;
 	}
 }
