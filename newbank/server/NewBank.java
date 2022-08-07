@@ -1,21 +1,28 @@
 package newbank.server;
 
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.time.LocalDate;
+import java.util.TimerTask;
+import java.util.Timer;
 
 public class NewBank {
 
 	private static final NewBank bank = new NewBank();
+	private  Timer timer;
+	private  TimerTask task;
 	private HashMap<String, User> users;
+
+
 	private static final int MINIMUM_PARAMETERS_NUMBER = 3;
 	private final MockDB db = MockDB.getMockDB();
 	private ArrayList<String[]> customerData =  new ArrayList<String[]>();
 
 	private NewBank() {
 		users = new HashMap<>();
+		timer = new Timer();
+		task = new PayableHelper();
+		timer.schedule(task,500, 5000);
 		addTestData();
 	}
 
@@ -41,6 +48,12 @@ public class NewBank {
 
 	public static NewBank getBank() {
 		return bank;
+	}
+
+	// used by the service account to get all users to find the account info
+	// (note: this is currently a big security risk)
+	public HashMap<String, User> getAllUsers(){
+		return users;
 	}
 
 	public synchronized UserID checkLogInDetails(String userName, String password) {
@@ -75,6 +88,9 @@ public class NewBank {
 					default:
 						return "FAIL";
 				}
+			} else if (user.getUserType() == UserType.SERVICE){
+				return listUsers();
+
 			} else {
 				// command parsing is now based on first word of request
 			switch (command) {

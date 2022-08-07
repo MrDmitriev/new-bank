@@ -33,6 +33,7 @@ class CustomerData {
         String[] customer0010 = { "indigo", "Indigo", "nT6n*", "STANDARD" };
         String[] customer0011 = { "hsbc", "HSBC", "r$tGH", "CORPORATE" };
         String[] customer0012 = { "bill", "Bill", "clinton", "STAFF" };
+        String[] customer0013 = { "service", "svc", "123", "STAFF" };
 
         storedCustomerData.add(customer0001);
         storedCustomerData.add(customer0002);
@@ -46,6 +47,7 @@ class CustomerData {
         storedCustomerData.add(customer0010);
         storedCustomerData.add(customer0011);
         storedCustomerData.add(customer0012);
+        storedCustomerData.add(customer0013);
 
     }
 
