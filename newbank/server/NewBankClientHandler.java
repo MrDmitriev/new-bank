@@ -32,8 +32,6 @@ public class NewBankClientHandler extends Thread{
 	
 				String command = in.readLine();
 	
-				out.println("You have selected" + command);
-			
 			switch (command) {
 				case "LOGIN":
 				case "1":
@@ -66,12 +64,15 @@ public class NewBankClientHandler extends Thread{
 
 	private void handleSuccessfulAuthentication(UserID userId) throws IOException {
 		while(true) {
-			System.out.println("handleSuccessfulAuthentication");
-
 			String request = in.readLine();
 			System.out.println("Request from " + userId.getKey());
 			String responce = bank.processRequest(userId, request);
 			out.println(responce);
+
+			if (responce.equals("LOGOUT")) {
+				out.println("You have been logged out");
+				return;
+			}
 		}
 	}
 

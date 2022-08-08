@@ -88,12 +88,18 @@ public class NewBank {
 					return makePayment(customer, request) + commandList();
 				case "VIEWTRANSACTIONS":
 					return viewTransactions(customer);
+				case "LOGOUT":
+					return logout(customer);
 				default:
 					return "FAIL" + commandList();
 			}
 		}
 	}
 	return "FAIL" + commandList();
+}
+
+private String logout (UserID customer) {
+	return "LOGOUT";
 }
 
 private String approveTopUp(String request) {
@@ -380,7 +386,7 @@ private String approveTopUp(String request) {
 		 "3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
 		 "4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
 		 "5)PAY + 'Name of User' + 'Amount\n" +
-     "6) VIEWTRANSACTIONS\n" +
+     	 "6) VIEWTRANSACTIONS\n" +
 		 "7)LOGOUT";
 
 	}
