@@ -4,6 +4,8 @@ public class TopUp  implements Transaction{
     private double amount;
     private String date;
     private TopUpStatus status;
+    private TransactionAction action;
+    private String account;
     /*
      * Idea here is that each time a customer top ups an account, a new TopUp object
      * is created.
@@ -18,6 +20,7 @@ public class TopUp  implements Transaction{
         this.amount = amount;
         this.date = date;
         this.status = TopUpStatus.PENDING;
+        this.action = TransactionAction.TOPUP;
     }
 //show status based on setStatus function
     public TopUpStatus getStatus() {
@@ -38,5 +41,15 @@ public class TopUp  implements Transaction{
 //show top up confirmation string
     public String toString() {
         return ("£" + amount + " on " + date);
+    }
+
+    // returns an action of a transaction
+    public TransactionAction getAction() {
+        return action;
+    }
+
+    // returns a string of an account of a user
+    public String getAccount() {
+        return account;
     }
 }

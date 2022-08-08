@@ -46,7 +46,7 @@ public class Account {
 		Date now = new Date(System.currentTimeMillis());
 
 		// create a transfer object associated with the account to reflect the move into the account
-		Transfer transfer = new Transfer(amount, now);
+		Transfer transfer = new Transfer(amount, now, getName());
 		transactions.add(transfer);
 	}
 
@@ -56,7 +56,7 @@ public class Account {
 		Date now = new Date(System.currentTimeMillis());
 
 		// create a transfer object associated with the account to reflect the move out of the account
-		Transfer transfer = new Transfer(-amount, now);
+		Transfer transfer = new Transfer(-amount, now, getName());
 		transactions.add(transfer);
 	}
 
@@ -77,4 +77,7 @@ public class Account {
 		pendingTopUps.clear();
 	}
 
+	public ArrayList<Transaction> getTransactions() {
+		return transactions;
+	}
 }
