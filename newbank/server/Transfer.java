@@ -1,18 +1,18 @@
 package newbank.server;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /* Transfer class is used when customers are moving from one account to another */
 public class Transfer implements Transaction{
     private double amount;
     private String status;
-    private Date transactionDate;
+    private LocalDate transactionDate;
     private TransactionAction action;
     private String account;
 
-    public Transfer(double amount, Date date, String account){
+    public Transfer(double amount, String account){
         this.amount = amount;
-        this.transactionDate = date;
+        this.transactionDate = LocalDate.now();
         this.action = TransactionAction.TRANSFER;
         this.account = account;
     }
@@ -31,7 +31,7 @@ public class Transfer implements Transaction{
     };
 
     public String toString(){
-        return ("£" + amount + " on " + transactionDate.toString());
+        return (account + " " + action.toString() +" £" + amount + " on " + transactionDate.toString());
     }
 
     public TransactionAction getAction() {

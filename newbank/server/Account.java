@@ -1,7 +1,7 @@
 package newbank.server;
 //test comment to commit
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Account {
 
@@ -10,6 +10,8 @@ public class Account {
 	private double currentBalance;
 	private ArrayList<Transaction> transactions;
 	private ArrayList<TopUp> pendingTopUps;
+	private ArrayList<Payable> payables;
+	private ArrayList<DirectDebit> directdebits;
 
 	//Create local variables for account name and opening balance within account
 	//also creates an array of transactions associated with the account where TopUps, Transfers etc. are stored
@@ -19,6 +21,8 @@ public class Account {
 		this.currentBalance = openingBalance;
 		transactions = new ArrayList<Transaction>();
 		pendingTopUps = new ArrayList<TopUp>();
+		payables = new ArrayList<Payable>();
+		directdebits = new ArrayList<DirectDebit>();
 	}
 
 	//return account name
@@ -27,7 +31,7 @@ public class Account {
 	}
 
 	public void topUpAccount(double amount) {
-		TopUp topUp = new TopUp(amount, new Date().toString());
+		TopUp topUp = new TopUp(amount, LocalDate.now().toString());
 		pendingTopUps.add(topUp);
 	}
 
@@ -40,24 +44,23 @@ public class Account {
 		return currentBalance;
 	}
 
-	//add money to the account
-	public void addBalance(double amount){
+	//add or remove money to/from the account
+	//positive input adds money, negative input removes it
+	public void addRemoveBalance(double amount){
 		this.currentBalance += amount;
-		Date now = new Date(System.currentTimeMillis());
 
 		// create a transfer object associated with the account to reflect the move into the account
-		Transfer transfer = new Transfer(amount, now, getName());
+		Transfer transfer = new Transfer(amount, getName());
 		transactions.add(transfer);
 	}
 
-	//remove money from the account
-	public void removeBalance(double amount){
-		this.currentBalance -= amount;
-		Date now = new Date(System.currentTimeMillis());
+	public void makeReceivePayment(double amount, Customer toFromCustomer){
+		this.currentBalance += amount;
+		toFromCustomer.getCustomerName();
 
-		// create a transfer object associated with the account to reflect the move out of the account
-		Transfer transfer = new Transfer(-amount, now, getName());
-		transactions.add(transfer);
+		// create a payment object associated with the account to reflect the payment sent/received
+		Payment payment = new Payment(amount, getName(), toFromCustomer.getCustomerName());
+		transactions.add(payment);
 	}
 
 	//return account name and opening balance
@@ -77,7 +80,28 @@ public class Account {
 		pendingTopUps.clear();
 	}
 
-	public ArrayList<Transaction> getTransactions() {
-		return transactions;
+	public ArrayList<Transaction> getTransactions() {return transactions;}
+
+	public ArrayList<DirectDebit> getDirectDebits(){return directdebits;}
+
+	public void createDirectDebit(Customer toCustomer, Account toAccount, double amount, int paymentDayOfMonth, LocalDate endDate){
+		DirectDebit directDebit = new DirectDebit(toCustomer, toAccount, amount, paymentDayOfMonth, endDate);
+		directdebits.add(directDebit);
 	}
+
+	public boolean cancelDirectDebit(String ID){
+		boolean removed = false;
+		DirectDebit ddToRemove = null;
+		for (DirectDebit dd:  getDirectDebits()){
+			if(dd.getID().equals(ID)){
+				ddToRemove = dd;
+			}
+		}
+		if(ddToRemove!=null){
+			getDirectDebits().remove(ddToRemove);
+			removed = true;
+		}
+		return removed;
+	}
+
 }
