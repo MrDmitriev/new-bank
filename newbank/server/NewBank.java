@@ -104,6 +104,8 @@ public class NewBank {
 					return makePayment(customer, request) + commandList();
 				case "VIEWTRANSACTIONS":
 					return viewTransactions(customer);
+				case "LOGOUT":
+					return logout(customer);
 				case "CREATEDIRECTDEBIT":
 					return createDirectDebit(customer, request) + commandList();
 				case "VIEWDIRECTDEBITS":
@@ -116,6 +118,10 @@ public class NewBank {
 		}
 	}
 	return "FAIL" + commandList();
+}
+
+private String logout (UserID customer) {
+	return "LOGOUT";
 }
 
 private String approveTopUp(String request) {
