@@ -109,6 +109,21 @@ public class Account {
 		return removed;
 	}
 
+	public boolean cancelMicroLoan(String ID){
+		boolean removed = false;
+		MicroLoan mlToRemove = null;
+		for (MicroLoan ml:  getMicroLoans()){
+			if(ml.getID().equals(ID)){
+				mlToRemove = ml;
+			}
+		}
+		if(mlToRemove!=null){
+			getMicroLoans().remove(mlToRemove);
+			removed = true;
+		}
+		return removed;
+	}
+
 	//This method only sets up the repayments, it doesn't make the initial payment
 	public void createMicroLoan(Customer toCustomer, Account toAccount, double amount, double interestRate){
 		MicroLoan microLoan = new MicroLoan(toCustomer, toAccount, amount, interestRate);

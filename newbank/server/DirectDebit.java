@@ -39,9 +39,9 @@ public class DirectDebit implements Payable {
     public String getID(){return ID;};
     public double getRegularPaymentAmount(){return regularPaymentAmount;}
     public DirectDebitStatus getStatus(){return status;};
-    public Object getStartDate(){return startDate;};
+    public LocalDate getStartDate(){return startDate;};
     public int getPaymentDayOfMonth() {return paymentDayOfMonth;};
-    public Object getEndDate() {return endDate;};
+    public LocalDate getEndDate() {return endDate;};
     public Account getToAccount(){return toAccount;}
     public Customer getToCustomer(){return toCustomer;}
     public String toString(){
