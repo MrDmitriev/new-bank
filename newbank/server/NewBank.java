@@ -543,12 +543,12 @@ private String approveTopUp(String request) {
 	private String viewMicroLoans(UserID customerID) {
 		ArrayList<MicroLoan> microLoansOfCustomer = users.get(customerID.getKey()).getAccount("Main").getMicroLoans();
 		if (microLoansOfCustomer.size() == 0) {
-			return "Direct debits have not been recorded";
+			return "Micro loans have not been recorded";
 		} else {
 			for (int i = 0; i < microLoansOfCustomer.size(); i++) {
 				System.out.println(microLoansOfCustomer.get(i).toString());
 			}
-			return "Direct debits have been printed to the console";
+			return "Micro loans have been printed to the console";
 		}
 	}
 
