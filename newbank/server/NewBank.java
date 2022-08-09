@@ -13,7 +13,7 @@ public class NewBank {
 	private final TimerTask task;
 	private final HashMap<String, User> users;
 
-
+	private double microLoanInterestRateInPercent;
 	private static final int MINIMUM_PARAMETERS_NUMBER = 3;
 	private final MockDB db = MockDB.getMockDB();
 	private ArrayList<String[]> customerData =  new ArrayList<String[]>();
@@ -24,6 +24,7 @@ public class NewBank {
 		task = new PayableHelper();
 		timer.schedule(task,5000, 86400000);
 		addTestData();
+		microLoanInterestRateInPercent = 10;
 	}
 
 	private void addTestData() {
@@ -112,6 +113,10 @@ public class NewBank {
 					return viewDirectDebits(customer) + commandList();
 				case "CANCELDIRECTDEBIT":
 					return cancelDirectDebit(customer, request);
+				case "CREATEMICROLOAN":
+					return createMicroLoan(customer, request);
+				case "VIEWMICROLOANS":
+					return viewMicroLoans(customer);
 				default:
 					return "FAIL" + commandList();
 			}
@@ -278,7 +283,7 @@ private String approveTopUp(String request) {
 		db.listCustomerRecords();
 		/** uncomment to test that customerData arraylist updates after a change to customer data
 		 * for (String[] record: customerData) {
-		 * System.out.println("Cutomer: " + record[0] + " User Name: " + record[1] + " Password: " + record[2] );
+		 * System.out.println("Customer: " + record[0] + " User Name: " + record[1] + " Password: " + record[2] );
 		 * }
 		 */
 		System.out.println();
@@ -426,35 +431,41 @@ private String approveTopUp(String request) {
 
 			// try to find to customer from input,
 			UserID toCustomerID = new UserID(tokens[1]);
-			if (users.containsKey(toCustomerID.getKey())){
+			if (users.containsKey(toCustomerID.getKey())) {
 				Customer toCustomer = (Customer) users.get(toCustomerID.getKey());
 				Account toAccount = toCustomer.getAccount("Main");
 
-				// only allow direct debits to go to corporate accounts
-				if (toCustomer.getUserType() == UserType.CORPORATE){
-					try {
-						double amount = Double.parseDouble(tokens[2]);
-						int paymentDayOfMonth = Integer.parseInt(tokens[3]);
-						LocalDate endDate = LocalDate.parse(tokens[4]);
+				if (fromAccount != null && toAccount != null) {
+					// only allow direct debits to go to corporate accounts
+					if (toCustomer.getUserType() == UserType.CORPORATE) {
+						try {
+							double amount = Double.parseDouble(tokens[2]);
+							int paymentDayOfMonth = Integer.parseInt(tokens[3]);
+							LocalDate endDate = LocalDate.parse(tokens[4]);
 
-						//check if the payment day is valid (must be between 1 and 28)
-						if (paymentDayOfMonth <= 0 || paymentDayOfMonth > 28){
-							return "FAIL - invalid payment day of month (must be between 1 and 28)";
-						}
-						// check if end date is in the future
-						if(endDate.isBefore(LocalDate.now())){
-							return "FAIL - End date cannot be in the past";
-						}
+							//check if the payment day is valid (must be between 1 and 28)
+							if (paymentDayOfMonth <= 0 || paymentDayOfMonth > 28) {
+								return "FAIL - invalid payment day of month (must be between 1 and 28)";
+							}
+							// check if end date is in the future
+							if (endDate.isBefore(LocalDate.now())) {
+								return "FAIL - End date cannot be in the past";
+							}
 
-						fromAccount.createDirectDebit(toCustomer, toAccount, amount, paymentDayOfMonth, endDate);
+							fromAccount.createDirectDebit(toCustomer, toAccount, amount, paymentDayOfMonth, endDate);
+						} catch (DateTimeParseException e) {
+							return "FAIL - Invalid input date";
+						} catch (NumberFormatException e) {
+							return "FAIL - Invalid input for amount or payment day of month";
+						}
+					} else {
+						return "FAIL - Direct debits must be setup with corporate users";
 					}
-					catch (DateTimeParseException e)  {return "FAIL - Invalid input date";}
-					catch (NumberFormatException e)  {return "FAIL - Invalid input for amount or payment day of month";}
 				} else {
-					return "FAIL - Direct debits must be setup with corporate users";
+					return "FAIL - Account(s) not found";
 				}
 			} else {
-				return "FAIL - Receiving account not found";
+				return "FAIL - Receiving customer not found";
 			}
 			return "SUCCESS";
 		}
@@ -478,6 +489,68 @@ private String approveTopUp(String request) {
 		return "FAIL";
 	}
 
+	//NOTE 	-fromCustomer is requesting the loan,
+	//		-toCustomer lends the money and receives repayments
+	private String createMicroLoan(UserID userID, String request){
+	/* request is in the form of
+	CREATEMICROLOAN <borrowFromCustomer> <loanAmount>
+	*/
+		String[] tokens = request.split(" ");
+
+		if(tokens.length == 3){
+			//get from customer and account (assume Main account for both)
+			Customer fromCustomer = (Customer) users.get(userID.getKey());
+			Account fromAccount = fromCustomer.getAccount("Main");
+
+			// try to find to customer from input,
+			UserID toCustomerID = new UserID(tokens[1]);
+			if (users.containsKey(toCustomerID.getKey())){
+				Customer toCustomer = (Customer) users.get(toCustomerID.getKey());
+				Account toAccount = toCustomer.getAccount("Main");
+				if (fromAccount != null && toAccount != null) {
+					// only allow micro loans to go to standard accounts
+					if (toCustomer.getUserType() == UserType.STANDARD) {
+						try {
+							double amount = Double.parseDouble(tokens[2]);
+
+							if (toAccount.getCurrentBalance() < amount){
+								return "FAIL - Insufficient balance in lender's account ";
+							} else {
+								//remove <moveValue> from <to> account
+								toAccount.makeReceivePayment(-amount, fromCustomer);
+								//add <moveValue> to <from> account
+								fromAccount.makeReceivePayment(amount, toCustomer);
+								fromAccount.createMicroLoan(toCustomer, toAccount, amount, microLoanInterestRateInPercent);
+							}
+
+						} catch (NumberFormatException e) {
+							return "FAIL - Invalid input for amount";
+						}
+					} else {
+						return "FAIL - Micro loans must be taken out with standard users";
+					}
+				} else {
+					return "FAIL - Account(s) not found";
+				}
+			} else {
+				return "FAIL - Receiving customer not found";
+			}
+			return "SUCCESS";
+		}
+		return "FAIL";
+	}
+
+	private String viewMicroLoans(UserID customerID) {
+		ArrayList<MicroLoan> microLoansOfCustomer = users.get(customerID.getKey()).getAccount("Main").getMicroLoans();
+		if (microLoansOfCustomer.size() == 0) {
+			return "Direct debits have not been recorded";
+		} else {
+			for (int i = 0; i < microLoansOfCustomer.size(); i++) {
+				System.out.println(microLoansOfCustomer.get(i).toString());
+			}
+			return "Direct debits have been printed to the console";
+		}
+	}
 
 	private String commandList(){
 	 return "\nPlease enter a command from the following list (leave spaces indicated by '+':\n" +
@@ -490,6 +563,8 @@ private String approveTopUp(String request) {
 		 "7)CREATEDIRECTDEBIT + 'corporate user name' + 'Amount' + 'Payment day of month' + 'End date (format yyyy-mm-dd)' \n" +
 		 "8)VIEWDIRECTDEBITS\n" +
 		 "9)CANCELDIRECTDEBITS + 'Direct debit ID' \n" +
+		 "10)CREATEMICROLOAN + 'standard user name' + 'Amount to borrow' \n" +
+		 "11)VIEWMICROLOANS\n" +
 		 "10)LOGOUT";
 	}
 }
