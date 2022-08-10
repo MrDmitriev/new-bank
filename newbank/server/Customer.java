@@ -48,4 +48,30 @@ public class Customer implements User {
 	public UserType getUserType() {
 		return userType;
 	}
+	
+	public void changeAccountName(String accountName, String newAccountName){
+		int i = 0;
+		while (i < accounts.size()) {
+			Account a = accounts.get(i);
+			if (a.getName().equals(accountName)) {
+				a.changeName(newAccountName);
+				System.out.println("Account name changed successfully from '" + accountName + "' to '" + newAccountName + "'");
+				return;
+			}
+
+		}
+	}
+
+	public void deleteAccount(String accountName) {
+		int i = 0;
+		while (i < accounts.size()) {
+			Account a = accounts.get(i);
+			if (a.getName().equals(accountName)) {
+					accounts.remove(a);
+					System.out.println("Account '" + accountName + "' has been successfully deleted");
+					return;
+			}
+
+		}
+	}
 }
