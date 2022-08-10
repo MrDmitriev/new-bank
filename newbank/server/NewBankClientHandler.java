@@ -29,9 +29,9 @@ public class NewBankClientHandler extends Thread{
 				out.println("Select any command from main menu:");
 				out.println("1. LOGIN");
 				out.println("2. EXIT");
-	
+
 				String command = in.readLine();
-	
+
 			switch (command) {
 				case "LOGIN":
 				case "1":
@@ -98,7 +98,9 @@ public class NewBankClientHandler extends Thread{
 				"7)CREATEDIRECTDEBIT + 'corporate user name' + 'Amount' + 'Payment day of month' + 'End date' \n" +
 				"8)VIEWDIRECTDEBITS\n" +
 				"9)CANCELDIRECTDEBITS + 'Direct debit ID' \n" +
-				"10)LOGOUT");
+				"10)CREATEMICROLOAN + 'standard user name' + 'Amount to borrow' \n" +
+				"11)VIEWMICROLOANS\n" +
+				"12)LOGOUT");
 
 				// generate user ID token from bank for use in subsequent requests
 				UserID userId = new UserID(username);
