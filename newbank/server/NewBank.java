@@ -112,6 +112,10 @@ public class NewBank {
 					return viewDirectDebits(customer) + commandList();
 				case "CANCELDIRECTDEBIT":
 					return cancelDirectDebit(customer, request);
+				case "CHANGEACCOUNTNAME":
+					return changeAccountName(customer, request) + commandList();
+				case "DELETEACCOUNT":
+					return deleteAccount(customer, request) + commandList();
 				default:
 					return "FAIL" + commandList();
 			}
@@ -477,6 +481,41 @@ private String approveTopUp(String request) {
 		}
 		return "FAIL";
 	}
+	
+	private String changeAccountName(UserID customerID, String request) {
+		String[] tokens = request.split(" ");
+		if(tokens.length != 3){
+			return "FAIL";
+		}
+		if (tokens.length == 3) {
+			Customer customer = (Customer) users.get(customerID.getKey());
+			String accountName = tokens[1];
+			String newAccountName = tokens[2];
+			if (customer.getAccount(accountName) != null) {
+				customer.changeAccountName(accountName, newAccountName);
+				return "";
+			}
+		}
+		return "Account name does not exist";
+	}
+
+
+	private String deleteAccount(UserID customerID, String request) {
+		String[] tokens = request.split(" ");
+		if(tokens.length != 2){
+			return "FAIL";
+		}
+		if (tokens.length == 2) {
+			Customer customer = (Customer) users.get(customerID.getKey());
+			String accountName = tokens[1];
+			if (customer.getAccount(accountName) != null) {
+				customer.deleteAccount(accountName);
+				return "";
+				}
+		}
+		return "Account name does not exist";
+	}
+
 
 
 	private String commandList(){
@@ -490,6 +529,8 @@ private String approveTopUp(String request) {
 		 "7)CREATEDIRECTDEBIT + 'corporate user name' + 'Amount' + 'Payment day of month' + 'End date (format yyyy-mm-dd)' \n" +
 		 "8)VIEWDIRECTDEBITS\n" +
 		 "9)CANCELDIRECTDEBITS + 'Direct debit ID' \n" +
-		 "10)LOGOUT";
+		 "10)CHANGEACCOUNTNAME + 'Old Name' + 'New Name'\n" +
+		 "11)DELETEACCOUNT + 'Account Name'\n" +
+		 "12)LOGOUT";
 	}
 }
