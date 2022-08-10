@@ -79,6 +79,10 @@ public class Account {
 	public void clearPendingTopUps() {
 		pendingTopUps.clear();
 	}
+	
+	public void changeName(String newAccountName){
+		accountName = newAccountName;
+	}
 
 	public ArrayList<Transaction> getTransactions() {return transactions;}
 
