@@ -12,6 +12,7 @@ public class Account {
 	private ArrayList<TopUp> pendingTopUps;
 	private ArrayList<Payable> payables;
 	private ArrayList<DirectDebit> directdebits;
+	private ArrayList<MicroLoan> microloans;
 
 	//Create local variables for account name and opening balance within account
 	//also creates an array of transactions associated with the account where TopUps, Transfers etc. are stored
@@ -23,6 +24,7 @@ public class Account {
 		pendingTopUps = new ArrayList<TopUp>();
 		payables = new ArrayList<Payable>();
 		directdebits = new ArrayList<DirectDebit>();
+		microloans = new ArrayList<MicroLoan>();
 	}
 
 	//return account name
@@ -88,9 +90,12 @@ public class Account {
 
 	public ArrayList<DirectDebit> getDirectDebits(){return directdebits;}
 
+	public ArrayList<MicroLoan> getMicroLoans(){return microloans;}
+
 	public void createDirectDebit(Customer toCustomer, Account toAccount, double amount, int paymentDayOfMonth, LocalDate endDate){
 		DirectDebit directDebit = new DirectDebit(toCustomer, toAccount, amount, paymentDayOfMonth, endDate);
 		directdebits.add(directDebit);
+		payables.add(directDebit);
 	}
 
 	public boolean cancelDirectDebit(String ID){
@@ -106,6 +111,28 @@ public class Account {
 			removed = true;
 		}
 		return removed;
+	}
+
+	public boolean cancelMicroLoan(String ID){
+		boolean removed = false;
+		MicroLoan mlToRemove = null;
+		for (MicroLoan ml:  getMicroLoans()){
+			if(ml.getID().equals(ID)){
+				mlToRemove = ml;
+			}
+		}
+		if(mlToRemove!=null){
+			getMicroLoans().remove(mlToRemove);
+			removed = true;
+		}
+		return removed;
+	}
+
+	//This method only sets up the repayments, it doesn't make the initial payment
+	public void createMicroLoan(Customer toCustomer, Account toAccount, double amount, double interestRate){
+		MicroLoan microLoan = new MicroLoan(toCustomer, toAccount, amount, interestRate);
+		microloans.add(microLoan);
+		payables.add(microLoan);
 	}
 
 }

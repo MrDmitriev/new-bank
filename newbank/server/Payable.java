@@ -4,11 +4,13 @@ package newbank.server;
 regular payment to be applied from one account to another
 * */
 
+import java.time.LocalDate;
+
 public interface Payable {
 
-    public Object getStartDate();
+    public LocalDate getStartDate();
 
-    public Object getEndDate();
+    public LocalDate getEndDate();
 
     public double getRegularPaymentAmount();
 

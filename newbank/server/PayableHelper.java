@@ -5,16 +5,14 @@ import java.time.LocalDate;
 
 class PayableHelper extends TimerTask{
 
-
     PayableHelper(){
-
     }
     public static int i=1;
      public void run(){
          NewBank bank = NewBank.getBank();
          HashMap<String, User> allUsers;
          ArrayList<Customer> allCustomers = new ArrayList<Customer>();
-         int today = LocalDate.now().getDayOfMonth();
+         int todayDay = LocalDate.now().getDayOfMonth();
 
          allUsers = bank.getAllUsers();
 
@@ -41,13 +39,38 @@ class PayableHelper extends TimerTask{
 
                             // if the current day of the month = the scheduled payment day
                             // of the month, make the payment
-                            if(today == paymentDay){
+                            if(todayDay == paymentDay && LocalDate.now().isBefore(directDebit.getEndDate())){
                                 double amount = directDebit.getRegularPaymentAmount();
                                 Account toAccount = directDebit.getToAccount();
                                 Customer toCustomer = directDebit.getToCustomer();
 
                                 account.makeReceivePayment(-amount,toCustomer);
                                 toAccount.makeReceivePayment(amount, customer);
+
+                                //remove the direct debit if the end date has passed
+                            } else if(LocalDate.now().isAfter(directDebit.getEndDate())) {
+                                account.cancelDirectDebit(directDebit.getID());
+                            }
+                        }
+
+                        // for each micro loan
+                        for(MicroLoan microLoan: account.getMicroLoans()){
+                            //System.out.println(directDebit.toString());
+                            int paymentDay = microLoan.getPaymentDayOfMonth();
+
+                            // if the current day of the month = the scheduled payment day
+                            // of the month, make the payment (this schedule only runs once per day)
+                            if(todayDay == paymentDay && LocalDate.now().isBefore(microLoan.getEndDate())){
+                                double amount = microLoan.getRegularPaymentAmount();
+                                Account toAccount = microLoan.getToAccount();
+                                Customer toCustomer = microLoan.getToCustomer();
+
+                                account.makeReceivePayment(-amount,toCustomer);
+                                toAccount.makeReceivePayment(amount, customer);
+
+                                //remove the micro loan if the end date has passed
+                            } else if(LocalDate.now().isAfter(microLoan.getEndDate())) {
+                                account.cancelMicroLoan(microLoan.getID());
                             }
                         }
                     }

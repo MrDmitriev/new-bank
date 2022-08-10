@@ -2,43 +2,39 @@ package newbank.server;
 
 import java.time.LocalDate;
 
-/*
-This class supports the implementation of direct debit payments
-A direct debit is associated with an account (the account from which the direct debit is being made)
-To set up the direct debit the following information is needed:
---> The amount of money required to be paid per month on the direct debit
---> The day of the month which the direct debit is being paid
---> The account to which the direct debit is being paid (from account is the account the
-    direct debit is associated with)
---> The end date of the direct debit (start date is the date when the direct debit is created)
-
- */
-
-public class DirectDebit implements Payable {
+public class MicroLoan implements Payable {
     private static int nextID = 1;
     private String ID;
     private double regularPaymentAmount;
-    private DirectDebitStatus status;
+    private MicroLoanStatus status;
     private LocalDate startDate;
     private LocalDate endDate;
     private Customer toCustomer;
     private Account toAccount;
     private int paymentDayOfMonth;
-    public DirectDebit(Customer toCustomer, Account toAccount, double amount, int paymentDayOfMonth, LocalDate endDate) {
-        this.ID = "DD_" + Integer.toString(nextID);
+
+    /* Microloans are at a fixed term of one year */
+    public MicroLoan(Customer toCustomer, Account toAccount, double amount, double interestRate) {
+        this.ID = "ML_" + Integer.toString(nextID);
         nextID++;
-        this.regularPaymentAmount = amount;
+        this.regularPaymentAmount = calculateRegularPaymentAmount(amount, interestRate);
         this.startDate = LocalDate.now();
-        this.endDate = endDate;
-        this.status = DirectDebitStatus.ACTIVE;
+        this.endDate = LocalDate.now().plusYears(1);    //hard coded 1 year as that's the only time period the calculation will work for
+        this.status = MicroLoanStatus.ACTIVE;
         this.toAccount = toAccount;
         this.toCustomer = toCustomer;
-        this.paymentDayOfMonth = paymentDayOfMonth;
+        this.paymentDayOfMonth = LocalDate.now().getDayOfMonth();
+    }
+
+    private double calculateRegularPaymentAmount(double amount, double interestRate){
+        double repayment;
+        repayment = (amount + ((interestRate/100)*amount))/12;
+        return repayment;
     }
 
     public String getID(){return ID;};
     public double getRegularPaymentAmount(){return regularPaymentAmount;}
-    public DirectDebitStatus getStatus(){return status;};
+    public MicroLoanStatus getStatus(){return status;};
     public LocalDate getStartDate(){return startDate;};
     public int getPaymentDayOfMonth() {return paymentDayOfMonth;};
     public LocalDate getEndDate() {return endDate;};
@@ -47,5 +43,6 @@ public class DirectDebit implements Payable {
     public String toString(){
         return (ID + ": £" + regularPaymentAmount + " to " + toCustomer.getCustomerName() +  " on " + paymentDayOfMonth +"th day of each month between " + startDate.toString() + " and " + endDate.toString());
     };
+
 
 }

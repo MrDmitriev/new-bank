@@ -29,9 +29,9 @@ public class NewBankClientHandler extends Thread{
 				out.println("Select any command from main menu:");
 				out.println("1. LOGIN");
 				out.println("2. EXIT");
-	
+
 				String command = in.readLine();
-	
+
 			switch (command) {
 				case "LOGIN":
 				case "1":
@@ -89,18 +89,21 @@ public class NewBankClientHandler extends Thread{
 			// Handle successful authentication
 			if (isUserAuthenticated) {
 				out.println("Log In Successful. \nPlease enter a command from the following list (leave spaces indicated by '+':\n" +
-				"1)SHOWMYACCOUNTS\n" +
-				"2)TOPUPACCOUNT + 'Account Name' + 'Top up amount'\n" +
-				"3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
-				"4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
-				"5)PAY + 'Name of User' + 'Amount\n" +
-				"6)VIEWTRANSACTIONS\n" +
-				"7)CREATEDIRECTDEBIT + 'corporate user name' + 'Amount' + 'Payment day of month' + 'End date' \n" +
-				"8)VIEWDIRECTDEBITS\n" +
-				"9)CANCELDIRECTDEBITS + 'Direct debit ID' \n" +
-				"10)CHANGEACCOUNTNAME + 'Old Name' + 'New Name'\n" +
-				"11)DELETEACCOUNT + 'Account Name'\n" +
-				"12)LOGOUT");
+           "1)SHOWMYACCOUNTS\n" +
+           "2)TOPUPACCOUNT + 'Account Name' + 'Top up amount'\n" +
+           "3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
+           "4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
+           "5)PAY + 'Name of User' + 'Amount\n" +
+           "6)VIEWTRANSACTIONS\n" +
+           "7)CREATEDIRECTDEBIT + 'corporate user name' + 'Amount' + 'Payment day of month' + 'End date (format yyyy-mm-dd)' \n" +
+           "8)VIEWDIRECTDEBITS\n" +
+           "9)CANCELDIRECTDEBITS + 'Direct debit ID' \n" +
+           "10)CHANGEACCOUNTNAME + 'Old Name' + 'New Name'\n" +
+           "11)DELETEACCOUNT + 'Account Name'\n" +
+           "12)LOGOUT";
+           "13)CREATEMICROLOAN + 'standard user name' + 'Amount to borrow' \n" +
+           "14)VIEWMICROLOANS\n" +
+           "15)LOGOUT";
 
 				// generate user ID token from bank for use in subsequent requests
 				UserID userId = new UserID(username);
