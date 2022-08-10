@@ -16,7 +16,7 @@ Returns SUCCESS or FAIL
 
 PAY <Person/Company> <Ammount>
 e.g. PAY John 100
-Returns SUCCESS or FAIL
+Returns SUCCESS or FAIL (if FAIL, returns a failure message)
 
 TOPUPACCOUNT <Account> <Amount>
 e.g TOPUPACCOUNT Main 1000
@@ -55,5 +55,33 @@ e.g EDITUSERNAME don Don lammy Donny
 Returns SUCCESS or FAIL. Edits a customer's username with customerName, existingUserName, password, newUsername
 
 VIEWTRANSACTIONS
-Returns transactions printed to a console of a user
 e.g., John Main TRANSFER 100
+Returns transactions printed to a console of a user
+
+LOGOUT
+Logs the current user out
+
+CREATEDIRECTDEBIT <corporate username> <Amount> <Payment day of month> <End date (format yyyy-mm-dd)>
+e.g. CREATEDIRECTDEBIT HSBC 50 10 2023-10-10
+Returns SUCCESS or FAIL (if FAIL, returns a failure message)
+Sets up a direct debit between the current user and the corporate user
+
+VIEWDIRECTDEBITS
+returns "Direct debits have not been recorded" (if no direct debits are found)
+or prints out the direct debits associated with the current user's account (if they have been found)
+e.g. returns "DD_1: £10 to Christina on 10th day of each month between 2022-10-08 and 2023-10-08..."
+
+CANCELDIRECTDEBIT <directDebitID>
+e.g. CANCELDIRECTDEBIT DD_1
+Returns SUCCESS or FAIL - Direct Debit not found
+Cancels and removes the direct debit identified by the ID
+
+CREATEMICROLOAN <customerToBorrowFrom> <Amount>
+e.g. CREATEMICROLOAN Christina 120
+Returns SUCCESS or FAIL (if FAIL, returns a failure message)
+Sets up a micro loan, where an initial payment is taken from the customerToBorrowFrom
+and a repayment schedule is set up.
+
+VIEWMICROLOANS
+returns a list of microloans (if found), otherwise returns message "Micro loans have not been recorded"
+Prints out the active microloans associated with the current user's account
