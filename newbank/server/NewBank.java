@@ -86,6 +86,8 @@ public class NewBank {
 						return editUserPassword(request);
 					case "EDITUSERNAME":
 						return editUserName(request);
+					case "LOGOUT":
+						return logout(customer);
 					default:
 						return "FAIL";
 				}
@@ -94,39 +96,39 @@ public class NewBank {
 				// command parsing is now based on first word of request
 			switch (command) {
 				case "SHOWMYACCOUNTS":
-					return showMyAccounts(customer) + commandList();
+					return showMyAccounts(customer);
 				case "TOPUPACCOUNT":
-					return topUpAccount(customer, request) + commandList();
+					return topUpAccount(customer, request);
 				case "NEWACCOUNT":
-					return createNewAccount(customer, request) + commandList();
+					return createNewAccount(customer, request);
 				case "MOVE":
-					return moveBetweenAccounts(customer,request) + commandList();
+					return moveBetweenAccounts(customer,request);
 				case "PAY":
-					return makePayment(customer, request) + commandList();
+					return makePayment(customer, request);
 				case "VIEWTRANSACTIONS":
 					return viewTransactions(customer);
 				case "LOGOUT":
 					return logout(customer);
 				case "CREATEDIRECTDEBIT":
-					return createDirectDebit(customer, request) + commandList();
+					return createDirectDebit(customer, request);
 				case "VIEWDIRECTDEBITS":
-					return viewDirectDebits(customer) + commandList();
+					return viewDirectDebits(customer);
 				case "CANCELDIRECTDEBIT":
 					return cancelDirectDebit(customer, request);
 				case "CHANGEACCOUNTNAME":
-					return changeAccountName(customer, request) + commandList();
+					return changeAccountName(customer, request);
 				case "DELETEACCOUNT":
-					return deleteAccount(customer, request) + commandList();
+					return deleteAccount(customer, request);
 				case "CREATEMICROLOAN":
 					return createMicroLoan(customer, request);
 				case "VIEWMICROLOANS":
 					return viewMicroLoans(customer);
 				default:
-					return "FAIL" + commandList();
+					return "FAIL";
 			}
 		}
 	}
-	return "FAIL" + commandList();
+	return "FAIL";
 }
 
 private String logout (UserID customer) {
@@ -219,25 +221,30 @@ private String approveTopUp(String request) {
 	private String moveBetweenAccounts(UserID customerID, String request) {
 		// request is in the form of "MOVE <value> <from account name> <to account name>"
 		String[] tokens = request.split(" ");
-		if (tokens.length == 4){
+		if (tokens.length == 4) {
 			Customer customer = (Customer) users.get(customerID.getKey());
-			double moveValue = Double.parseDouble(tokens[1]);
-			Account fromAccount = customer.getAccount(tokens[2]);
-			Account toAccount = customer.getAccount(tokens[3]);
 
-			// Only attempt if both of the accounts are found to exist and be owned by the requesting customer
-			if(fromAccount!=null && toAccount!=null){
-				if (fromAccount.getCurrentBalance() < moveValue){
-					return "FAIL - Insufficient balance in <from> account ";
-				} else {
-					//remove <moveValue> from <from> account
-					fromAccount.addRemoveBalance(-moveValue);
-					//add <moveValue> to <to> account
-					toAccount.addRemoveBalance(moveValue);
+			try {
+				double moveValue = Double.parseDouble(tokens[1]);
+				Account fromAccount = customer.getAccount(tokens[2]);
+				Account toAccount = customer.getAccount(tokens[3]);
+
+				// Only attempt if both of the accounts are found to exist and be owned by the requesting customer
+				if(fromAccount!=null && toAccount!=null){
+					if (fromAccount.getCurrentBalance() < moveValue){
+						return "FAIL - Insufficient balance in <from> account ";
+					} else {
+						//remove <moveValue> from <from> account
+						fromAccount.addRemoveBalance(-moveValue);
+						//add <moveValue> to <to> account
+						toAccount.addRemoveBalance(moveValue);
+					}
 				}
+			} catch (NumberFormatException e) {
+				return "FAIL - Invalid input for moveValue";
 			}
 		}
-		return "FAIL";
+		return "SUCCESS";
 	}
 
 	//allows logged in customer to make a payment to another customer
@@ -589,24 +596,5 @@ private String approveTopUp(String request) {
 			}
 			return "Micro loans have been printed to the console";
 		}
-	}
-
-	private String commandList(){
-	 return "\nPlease enter a command from the following list (leave spaces indicated by '+':\n" +
-		 "1)SHOWMYACCOUNTS\n" +
-		 "2)TOPUPACCOUNT + 'Account Name' + 'Top up amount'\n" +
-		 "3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
-		 "4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
-		 "5)PAY + 'Name of User' + 'Amount\n" +
-		 "6)VIEWTRANSACTIONS\n" +
-		 "7)CREATEDIRECTDEBIT + 'corporate user name' + 'Amount' + 'Payment day of month' + 'End date (format yyyy-mm-dd)' \n" +
-		 "8)VIEWDIRECTDEBITS\n" +
-		 "9)CANCELDIRECTDEBITS + 'Direct debit ID' \n" +
-		 "10)CHANGEACCOUNTNAME + 'Old Name' + 'New Name'\n" +
-		 "11)DELETEACCOUNT + 'Account Name'\n" +
-		 "12)LOGOUT";
-		 "13)CREATEMICROLOAN + 'standard user name' + 'Amount to borrow' \n" +
-		 "14)VIEWMICROLOANS\n" +
-		 "15)LOGOUT";
 	}
 }
