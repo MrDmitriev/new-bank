@@ -64,10 +64,19 @@ public class NewBankClientHandler extends Thread{
 
 	private void handleSuccessfulAuthentication(UserID userId) throws IOException {
 		while(true) {
+			String userType = MockDB.getUserTypeFromUserName(userId.getKey());
+			if (userType.equals("STAFF")){
+				System.out.println(commandListStaff());
+			} else {
+				System.out.println(commandList());
+			}
+
 			String request = in.readLine();
 			System.out.println("Request from " + userId.getKey());
 			String responce = bank.processRequest(userId, request);
 			out.println(responce);
+			out.println("Press enter to continue...");
+			in.readLine();
 
 			if (responce.equals("LOGOUT")) {
 				out.println("You have been logged out");
@@ -88,22 +97,7 @@ public class NewBankClientHandler extends Thread{
 
 			// Handle successful authentication
 			if (isUserAuthenticated) {
-				out.println("Log In Successful. \nPlease enter a command from the following list (leave spaces indicated by '+':\n" +
-           "1)SHOWMYACCOUNTS\n" +
-           "2)TOPUPACCOUNT + 'Account Name' + 'Top up amount'\n" +
-           "3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
-           "4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
-           "5)PAY + 'Name of User' + 'Amount\n" +
-           "6)VIEWTRANSACTIONS\n" +
-           "7)CREATEDIRECTDEBIT + 'corporate user name' + 'Amount' + 'Payment day of month' + 'End date (format yyyy-mm-dd)' \n" +
-           "8)VIEWDIRECTDEBITS\n" +
-           "9)CANCELDIRECTDEBITS + 'Direct debit ID' \n" +
-           "10)CHANGEACCOUNTNAME + 'Old Name' + 'New Name'\n" +
-           "11)DELETEACCOUNT + 'Account Name'\n" +
-           "12)LOGOUT";
-           "13)CREATEMICROLOAN + 'standard user name' + 'Amount to borrow' \n" +
-           "14)VIEWMICROLOANS\n" +
-           "15)LOGOUT";
+				out.println("Log In Successful, What would you like to do?");
 
 				// generate user ID token from bank for use in subsequent requests
 				UserID userId = new UserID(username);
@@ -121,5 +115,36 @@ public class NewBankClientHandler extends Thread{
 	public void handleExit() {
 		out.println("Thank you for using NewBank, goodbye");
 	}
+
+	private String commandList(){
+		return "\nPlease enter a command from the following list (leave spaces indicated by '+':\n" +
+				"1)SHOWMYACCOUNTS\n" +
+				"2)TOPUPACCOUNT + 'Account Name' + 'Top up amount'\n" +
+				"3)NEWACCOUNT + 'New account name' + 'Opening balance'\n" +
+				"4)MOVE + 'Name of withdrawal account' + 'Name of deposit account' + 'Amount'\n"+
+				"5)PAY + 'Name of User' + 'Amount\n" +
+				"6)VIEWTRANSACTIONS\n" +
+				"7)CREATEDIRECTDEBIT + 'corporate user name' + 'Amount' + 'Payment day of month' + 'End date (format yyyy-mm-dd)' \n" +
+				"8)VIEWDIRECTDEBITS\n" +
+				"9)CANCELDIRECTDEBITS + 'Direct debit ID' \n" +
+				"10)CHANGEACCOUNTNAME + 'Old Name' + 'New Name'\n" +
+				"11)DELETEACCOUNT + 'Account Name'\n" +
+				"12)CREATEMICROLOAN + 'standard user name' + 'Amount to borrow' \n" +
+				"13)VIEWMICROLOANS\n" +
+				"14)LOGOUT";
+	}
+
+	private String commandListStaff(){
+		return "\nPlease enter a command from the following list (leave spaces indicated by '+':\n" +
+				"1)SHOWAPPROVETRANSACTIONS\n" +
+				"2)APPROVETOPUP + 'Username'\n" +
+				"3)LISTUSERS \n" +
+				"4)DELETEUSER + 'Customer name' + 'Username' + 'Password'\n"+
+				"5)CREATEUSER 'New customer name' + 'New username' + 'New password' + 'User type'\n"+
+				"6)EDITUSERPASSWORD 'Customer name' + 'Username' + 'Existing password' + 'New password'\n" +
+				"7)EDITUSERNAME + 'Customer name' + 'Existing username' + 'Password' + 'New username' \n" +
+				"8)LOGOUT";
+	}
+
 
 }
